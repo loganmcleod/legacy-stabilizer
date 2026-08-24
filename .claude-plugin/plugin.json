@@ -1,7 +1,7 @@
 {
   "name": "legacy-stabilizer",
   "displayName": "Legacy Stabilizer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Assess and stabilize legacy AngularJS 1.x, Java/Spring Boot, and Oracle polyrepos: map architecture, validate engineering and performance risks with evidence, and produce a ranked remediation plan. Assessment-first; remediation is opt-in and authorization-gated. Not a security tool.",
   "author": {
     "name": "Logan McLeod"
