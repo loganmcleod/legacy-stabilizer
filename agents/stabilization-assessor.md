@@ -1,8 +1,9 @@
 ---
 name: stabilization-assessor
 description: >-
-  Read-only stabilization assessor for legacy AngularJS 1.x, Java/Spring Boot, and
-  Oracle polyrepos. Maps topology, traces critical runtime paths, and produces
+  Read-only stabilization assessor for legacy AngularJS 1.x and Angular 17 (NX
+  17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c
+  polyrepos. Maps topology, traces critical runtime paths, and produces
   evidence-linked Candidate findings with confidence states. Never edits code and
   never performs security review. Delegate discovery and finding-generation here to
   keep audit work isolated from any implementation context.

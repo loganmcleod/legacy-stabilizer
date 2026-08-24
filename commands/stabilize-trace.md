@@ -11,7 +11,7 @@ Workflow to trace: $ARGUMENTS
 Trace it through every boundary:
 
 ```
-AngularJS route/template -> controller/component/directive -> client service/HTTP
+Angular 17 route/component or AngularJS route/template -> controller/component/directive -> client service/HTTP
 -> Spring endpoint -> service orchestration -> repository/DAO/stored proc
 -> Oracle objects and SQL -> response mapping -> UI state update
 ```

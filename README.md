@@ -1,7 +1,8 @@
 # legacy-stabilizer
 
 A Claude Code skill and plugin for **assessing and stabilizing complex legacy
-polyrepos** built on AngularJS 1.x, Java/Spring Boot, and Oracle.
+polyrepos** built on AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring
+Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c.
 
 Its first objective is to reduce production risk — defects, regressions, and
 performance bottlenecks — at the **lowest safe cost**. Modernization is a
@@ -11,6 +12,11 @@ validates each risk with evidence, ranks work by benefit-over-cost, and produces
 
 > This is an engineering-quality and performance workflow. **It does not perform a
 > security audit** and will not present security findings unless you separately ask.
+
+> **Plain-language by design.** Throughout, the workflow talks to you like you are
+> five: small words, every technical term explained with an everyday picture, and a
+> check that it made sense. It changes *how* things are explained, never *what* the
+> workflow does.
 
 ---
 
@@ -62,61 +68,188 @@ Validate the package first:
 claude plugin validate /path/to/legacy-stabilizer --strict
 ```
 
-Installing the plugin gives you the skill, six phase commands, and the read-only
-assessor subagent.
+Installing the plugin gives you **two skills** (`stabilization-init` and
+`legacy-stabilizer`), **eight slash commands** (a router, the setup command, and
+six phase commands), and the read-only `stabilization-assessor` subagent.
 
-### Option B — as a portable skill (no plugin)
+After installing, confirm it loaded by typing `/` in Claude Code and looking for
+the `legacy-stabilizer:` commands, or run the router:
 
-The skill core is self-contained. Copy it into your personal or project skills
-directory:
+```
+/legacy-stabilizer:stabilize
+```
+
+### Option B — as portable skills (no plugin)
+
+The skill cores are self-contained. Copy **both** skill folders into your personal
+or project skills directory:
 
 ```bash
 # personal (all projects)
-cp -r skills/legacy-stabilizer ~/.claude/skills/legacy-stabilizer
+cp -r skills/legacy-stabilizer   ~/.claude/skills/legacy-stabilizer
+cp -r skills/stabilization-init  ~/.claude/skills/stabilization-init
 
 # or project-local
-cp -r skills/legacy-stabilizer .claude/skills/legacy-stabilizer
+cp -r skills/legacy-stabilizer   .claude/skills/legacy-stabilizer
+cp -r skills/stabilization-init  .claude/skills/stabilization-init
 ```
 
-Claude then loads it on relevance, or you invoke it with `/legacy-stabilizer`.
-The slash commands and subagent are plugin-only; the skill and its Python helpers
-work either way.
+Claude loads them on relevance, or you invoke them by name: `/stabilization-init`
+to start, or `/legacy-stabilizer` for the main workflow. The slash commands
+(`stabilize-*`) and the subagent are plugin-only; the skills and their Python
+helpers work either way.
 
 ---
 
 ## Usage
 
-> **New here? Follow [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md).** It is the
-> prescriptive, step-by-step run — the exact command order, the decision to make at
-> each gate, the artifact each step produces, and when you are allowed to proceed.
-> The table below is the quick reference; the playbook is the procedure.
+> **New here? The single command to start is `/legacy-stabilizer:stabilize-init`.**
+> It asks you everything, sets up the workspace, and walks you into the rest. The
+> [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) is the full prescriptive run; the sections
+> below show how to invoke and interact with **every** stage, with examples.
 
-The helper scripts need **Python 3.8+** on your PATH. Start by scaffolding a
-workspace *outside* the code under assessment and seeding the charter:
+The helper scripts need **Python 3.8+** on your PATH. All commands are namespaced
+`/legacy-stabilizer:<command>`. Every stage except the last is read-only.
 
-```bash
-mkdir -p stabilization-workspace/{architecture,evidence,repositories}
-cd stabilization-workspace
-cp <skill>/templates/CHARTER.md .        # scope + authorization gate
-cp <skill>/templates/portfolio.yaml .    # repo manifest
-```
+### The map of stages
 
-Then start with the router, or jump to a phase. Commands are namespaced
-`/legacy-stabilizer:<command>`:
+| # | Command | Phase | What it does | Mode |
+|---|---|---|---|---|
+| — | `/legacy-stabilizer:stabilize` | — | Overview + router; points you to the right stage | read-only |
+| 1 | `/legacy-stabilizer:stabilize-init` | setup | **Start here.** Asks for repos + background notes, builds the workspace and `BACKGROUND_DOSSIER.md`, then begins Phase 0 | read-only |
+| 2 | `/legacy-stabilizer:stabilize-baseline` | 0, 2 | Writes the charter (scope + safety gate) and the operational baseline | read-only |
+| 3 | `/legacy-stabilizer:stabilize-inventory <path>` | 1 | Maps repos, builds, and candidate layers | read-only |
+| 4 | `/legacy-stabilizer:stabilize-trace <workflow>` | 3 | Traces one critical path end to end | read-only |
+| 5 | `/legacy-stabilizer:stabilize-findings [area]` | 4, 5 | Runs detectors, normalizes + dedupes findings | read-only |
+| 6 | `/legacy-stabilizer:stabilize-plan` | 6 | Triages into a ranked master plan | read-only |
+| 7 | `/legacy-stabilizer:stabilize-remediate <finding-id>` | 7–10 | Designs, implements, releases, prevents | **authorization-gated** |
 
-| Command | Phase | Does | Mode |
-|---|---|---|---|
-| `/legacy-stabilizer:stabilize` | — | Overview and router | read-only |
-| `/legacy-stabilizer:stabilize-inventory <workspace>` | 1 | Map topology, builds, candidate layers | read-only |
-| `/legacy-stabilizer:stabilize-baseline` | 0, 2 | Charter + operational baseline | read-only |
-| `/legacy-stabilizer:stabilize-trace <workflow>` | 3 | Trace a critical runtime path end to end | read-only |
-| `/legacy-stabilizer:stabilize-findings [area]` | 4, 5 | Run detectors, normalize + dedupe findings | read-only |
-| `/legacy-stabilizer:stabilize-plan` | 6 | Triage → ranked master plan | read-only |
-| `/legacy-stabilizer:stabilize-remediate <finding-id>` | 7–10 | Design → implement → release → prevent | **authorization-gated** |
+### How you interact with it
 
-Typical first run (assessment-only), after scaffolding the workspace above:
+You do not need to know the jargon. Each command **talks to you like you are
+five**: it asks plain-language questions, explains any technical word with an
+everyday picture, and waits for your answers. A typical exchange:
 
 ```
+You:     /legacy-stabilizer:stabilize-init
+
+Claude:  Before we look at your code, I need a few things. First one:
+         a "repository" is one big folder that holds one app's code — like one
+         LEGO box. What is the full path to each folder you want me to look at?
+
+You:     /Users/me/work/orders-ui, /Users/me/work/orders-api
+
+Claude:  Got it — two folders. Do you also have a folder of background notes
+         (old bug lists, SQL, Jira exports)? If yes, what is its full path?
+
+You:     /Users/me/work/handover-notes
+
+...and so on. At the end it shows a summary and asks "Ready to begin? (yes/no)".
+```
+
+Answer in plain words. If you do not know something, say "not sure" — it records
+that instead of guessing. You can also pass context up front:
+`/legacy-stabilizer:stabilize-init checkout is slow and nightly recon fails`.
+
+### Stage 1 — `stabilize-init` (start here)
+
+```
+/legacy-stabilizer:stabilize-init
+```
+
+**Asks you for:** full paths to every repository (required); a background-notes
+folder (optional — reverse-engineered business cases, SQL, bug lists,
+UI→API→SQL flows, Jira dumps); your most important user journeys; current
+symptoms; where to put the workspace; anything to skip; looking-only vs
+allowed-to-fix; and whether real-life telemetry exists.
+
+**Produces:** a fresh `stabilization-workspace/` (with `CHARTER.md` and
+`portfolio.yaml`), and — if you gave a notes folder — one tidy
+`evidence/BACKGROUND_DOSSIER.md` summarizing every note. Then it asks
+"Ready? (yes/no)" and, on yes, moves into Stage 2.
+
+> **Prefer to set up by hand?** You can skip `stabilize-init` and scaffold the
+> workspace yourself, then start at Stage 2:
+> ```bash
+> mkdir -p stabilization-workspace/{architecture,evidence,repositories}
+> cd stabilization-workspace
+> cp <skill>/templates/CHARTER.md .        # scope + authorization gate
+> cp <skill>/templates/portfolio.yaml .    # repo manifest
+> ```
+
+### Stage 2 — `stabilize-baseline` (charter + baseline)
+
+```
+/legacy-stabilizer:stabilize-baseline "checkout is slow; nightly recon fails"
+```
+
+**Reads** `BACKGROUND_DOSSIER.md` if present, then fills `CHARTER.md` (scope,
+critical journeys, symptoms, and the Mode — the safety gate) and writes
+`INITIAL_HEALTH_BASELINE.md` from whatever evidence exists. Where telemetry is
+missing it says so and downgrades confidence instead of inventing numbers.
+
+### Stage 3 — `stabilize-inventory` (map the estate)
+
+```
+/legacy-stabilizer:stabilize-inventory ~/work/my-estate
+```
+
+**Produces** `evidence/inventory.json` (repos, revisions, build systems,
+candidate layers) and helps you fill `portfolio.yaml`. Topology only — a match is
+a lead, not proof of a call relationship.
+
+### Stage 4 — `stabilize-trace` (follow one path)
+
+```
+/legacy-stabilizer:stabilize-trace checkout
+```
+
+**Traces** one dominant workflow across every layer (Angular/AngularJS →
+Spring Boot → Oracle) and produces a Mermaid sequence diagram, labelling anything
+inferred. Pick the journey that hurts most if it breaks.
+
+### Stage 5 — `stabilize-findings` (detect + normalize)
+
+```
+/legacy-stabilizer:stabilize-findings all
+# or narrow to one layer:
+/legacy-stabilizer:stabilize-findings angular-nx
+/legacy-stabilizer:stabilize-findings spring
+/legacy-stabilizer:stabilize-findings oracle
+```
+
+**Applies** the detectors along the traced paths, writes each as a `Candidate`
+in `evidence/findings.json`, and runs `normalize_findings.py` to validate and flag
+duplicate root causes. It will not assert a database problem without a query count
+or execution plan.
+
+### Stage 6 — `stabilize-plan` (rank the work)
+
+```
+/legacy-stabilizer:stabilize-plan
+```
+
+**Produces** the ranked `REMEDIATION_MASTER_PLAN.md` and gates it with
+`validate_plan.py`. **This is the end of an assessment-only run** — the deliverable
+is the plan, and no application code has changed.
+
+### Stage 7 — `stabilize-remediate` (only when authorized)
+
+```
+/legacy-stabilizer:stabilize-remediate STAB-DB-0042
+```
+
+**Refuses to touch code** unless `CHARTER.md` has an Authorization row for that
+finding/repo *and* the finding already carries evidence, verification, and
+rollback. To authorize: set the charter Mode to **Remediation-authorized** and add
+a row naming the finding ID, repo, who authorized it, and the date. It then works
+one small reversible batch: reproduce → characterization test → single change →
+tests → before/after evidence → contract check → risk-proportional release.
+
+### The whole assessment run, end to end
+
+```
+/legacy-stabilizer:stabilize-init                 # answer the questions
 /legacy-stabilizer:stabilize-baseline "checkout is slow; nightly recon fails"
 /legacy-stabilizer:stabilize-inventory ~/work/my-estate
 /legacy-stabilizer:stabilize-trace checkout
@@ -124,13 +257,9 @@ Typical first run (assessment-only), after scaffolding the workspace above:
 /legacy-stabilizer:stabilize-plan
 ```
 
-This produces the health baseline, a traced runtime path, a validated findings
-registry, and a ranked `REMEDIATION_MASTER_PLAN.md` — **without modifying any
-application code**.
-
-Remediation (`stabilize-remediate`) refuses to touch code unless the charter
-records authorization for that finding/repo and the finding already carries
-evidence, verification, and rollback.
+This yields the dossier, health baseline, a traced runtime path, a validated
+findings registry, and a ranked `REMEDIATION_MASTER_PLAN.md` — **without modifying
+any application code**.
 
 ---
 
@@ -146,6 +275,7 @@ legacy-stabilizer/
 │   ├── references/                 # progressive-disclosure detail
 │   │   ├── workflow.md             # Phases 0–10 in full
 │   │   ├── detectors-angularjs.md
+│   │   ├── detectors-angular-nx.md
 │   │   ├── detectors-spring.md
 │   │   ├── detectors-oracle.md
 │   │   ├── triage-model.md         # scoring formula + L0–L7 intervention ladder
@@ -158,7 +288,10 @@ legacy-stabilizer/
 │   │   ├── stab_schema.py          # shared schema + validation
 │   │   └── test_scripts.py         # self-checks
 │   └── templates/                  # CHARTER, portfolio, master plan, baseline, finding, decision record
-├── commands/                       # six phase slash commands (plugin)
+├── skills/stabilization-init/       # ← start-here setup skill (gather inputs, build dossier)
+│   ├── SKILL.md
+│   └── templates/BACKGROUND_DOSSIER.md
+├── commands/                       # phase slash commands (plugin), incl. stabilize-init
 ├── agents/stabilization-assessor.md# read-only discovery subagent (plugin)
 ├── docs/
 │   ├── PLAYBOOK.md                 # prescriptive step-by-step run (start here)

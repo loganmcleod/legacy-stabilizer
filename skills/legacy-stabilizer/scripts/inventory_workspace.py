@@ -26,6 +26,8 @@ BUILD_MARKERS = {
     "pom.xml": "java/maven",
     "build.gradle": "java/gradle",
     "build.gradle.kts": "java/gradle",
+    "nx.json": "javascript/nx",
+    "angular.json": "javascript/angular",
     "package.json": "javascript/npm",
     "bower.json": "javascript/bower",
     "requirements.txt": "python/pip",
@@ -36,7 +38,8 @@ BUILD_MARKERS = {
 # Likely-layer path hints. These are DIRECTORY-NAME heuristics only, used to
 # point reviewers at candidate areas. They prove nothing about runtime roles.
 LAYER_HINTS = {
-    "presentation-angularjs": ["controllers", "directives", "app", "webapp", "views"],
+    "presentation-angularjs": ["controllers", "directives", "webapp", "views"],
+    "presentation-angular": ["apps", "libs", "components", "features", "app"],
     "service-spring": ["service", "services", "controller", "web", "rest"],
     "persistence-oracle": ["repository", "dao", "mapper", "mybatis", "sql", "domain"],
 }

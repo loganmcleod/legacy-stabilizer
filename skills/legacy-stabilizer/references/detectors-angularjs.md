@@ -1,8 +1,9 @@
 # Detectors — AngularJS 1.x
 
-Candidate detectors for the presentation layer. Every match is a **lead**, not a
-defect. Record an evidence state and attach the proof named below before raising
-confidence above `Candidate`.
+Candidate detectors for the **AngularJS 1.x** presentation layer. For Angular 17
+and NX 17.3.x, use `detectors-angular-nx.md` — the frameworks share almost no
+failure modes. Every match is a **lead**, not a defect. Record an evidence state
+and attach the proof named below before raising confidence above `Candidate`.
 
 ## What to look for
 

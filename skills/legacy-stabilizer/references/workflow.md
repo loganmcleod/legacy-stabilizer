@@ -16,6 +16,12 @@ Two modes exist and must stay distinct:
 
 ## Phase 0 — Charter, Scope, and Safety Boundaries
 
+If `evidence/BACKGROUND_DOSSIER.md` exists (produced by the `stabilization-init`
+skill), **read it first** and use it to pre-fill the charter — it already holds
+the critical journeys, current symptoms, known bug leads, and the repository
+paths. Confirm each pre-filled item with the user rather than treating it as
+settled.
+
 Define, in writing, before touching any code:
 
 - Business-critical user journeys and current production symptoms.
@@ -48,10 +54,14 @@ corroborate. For each repository identify:
 
 - build roots and module boundaries; deployable services, web apps, scheduled
   jobs, DB migration projects;
-- AngularJS modules, routes, controllers, directives, services, factories,
+- AngularJS 1.x modules, routes, controllers, directives, services, factories,
   interceptors, templates;
-- Spring controllers, services, domain objects, repositories/DAOs, transaction
-  annotations, schedulers, listeners, integration clients;
+- Angular 17 apps/libs, standalone components and NgModules, services, routes,
+  HTTP clients/interceptors, and the NX 17.3.x workspace layout (`nx.json`,
+  `project.json`, module-boundary tags, project dependency graph);
+- Spring Boot 2.7 controllers, services, domain objects, Hibernate 5.6
+  repositories/DAOs, transaction annotations, schedulers, listeners, integration
+  clients; note the Java 21 / Boot 2.7 / Hibernate 5.6 versions in use;
 - Oracle access paths: JPA, Hibernate, Spring JDBC, MyBatis, stored procedures,
   native SQL, dynamic SQL builders;
 - cross-repo HTTP, messaging, shared-library, file, and database coupling;
@@ -93,7 +103,7 @@ an explicit evidence-acquisition task.
 Trace the few workflows that dominate customer impact or operational cost:
 
 ```
-AngularJS route/template
+Angular 17 route/component or AngularJS route/template
   -> controller/component/directive
   -> client service / HTTP adapter
   -> Spring endpoint and request mapping
@@ -114,7 +124,8 @@ legacy layer.
 ## Phase 4 — Targeted Defect Detection
 
 Apply detectors *after* topology and path mapping, so results rank by real use.
-See `detectors-angularjs.md`, `detectors-spring.md`, `detectors-oracle.md`.
+See `detectors-angularjs.md`, `detectors-angular-nx.md`, `detectors-spring.md`,
+`detectors-oracle.md`.
 
 Everything a detector produces is a **Candidate** until corroborated. Assign an
 evidence state: `Confirmed`, `Probable`, `Candidate`, `Not Reproducible`.

@@ -1,7 +1,22 @@
 # Detectors — Spring Boot / Java
 
-Candidate detectors for the service/application layer. Matches are leads. Attach
-runtime or test evidence before raising confidence.
+Candidate detectors for the service/application layer. Targeted stack: **Java 21,
+Spring Boot 2.7.18, Hibernate 5.6.x**. Matches are leads. Attach runtime or test
+evidence before raising confidence.
+
+## Version context (record, do not auto-remediate)
+
+- **Spring Boot 2.7.18** is the last 2.7 patch and is past OSS end-of-life. Note
+  the support status as a risk; do **not** make a framework upgrade the default
+  remediation — it is an L6–L7 move requiring a decision record.
+- **Java 21** virtual threads are **not** wired in by Spring Boot 2.7 (that
+  arrived in Boot 3.2). Blocking I/O still runs on platform threads here, so
+  pool-exhaustion detectors below still apply. If virtual threads were retrofitted
+  by hand, watch for pinning inside `synchronized` blocks or held monitors.
+- **Hibernate 5.6.x**: default `open-session-in-view` masks
+  `LazyInitializationException` and hides N+1 behind the view. Check the
+  `spring.jpa.open-in-view` setting and the batch fetch size before drawing
+  conclusions.
 
 ## What to look for
 
@@ -17,6 +32,10 @@ runtime or test evidence before raising confidence.
   unexpected propagation and remote calls held inside long transactions.
 - **Chatty persistence / downstream** — repository calls in loops, excessive
   entity loading, N+1 via lazy associations, chatty downstream service calls.
+- **Hibernate 5.6 lazy-loading traps** — `LazyInitializationException` outside a
+  session, or the reverse: `open-in-view` silently keeping the session open and
+  hiding N+1. Corroborate with a query count, and note the `open-in-view` setting
+  and `default_batch_fetch_size`.
 - **Blocking on constrained threads** — blocking I/O on request or fixed executor
   threads that can exhaust the pool.
 - **Weak test seams** — critical behavior with hidden static/global dependencies

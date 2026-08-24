@@ -1,8 +1,18 @@
 # Detectors — Oracle / Persistence
 
-Candidate detectors for the data layer. These carry the **heaviest evidence
-burden** in the whole workflow: most database claims require schema metadata and
-an execution plan, not source inspection. Source inspection produces a lead only.
+Candidate detectors for the data layer. Targeted platform: **Oracle 19c**. These
+carry the **heaviest evidence burden** in the whole workflow: most database claims
+require schema metadata and an execution plan, not source inspection. Source
+inspection produces a lead only.
+
+## Oracle 19c context
+
+19c actively reshapes plans at runtime — adaptive plans, real-time and automatic
+statistics, SQL Plan Management baselines, and (on Enterprise Edition) automatic
+indexing. A plan you read once may not be the plan that ran. So: capture the
+*actual* plan for the SQL ID, check for an accepted SQL plan baseline before
+proposing a hint or index, and account for bind peeking / cardinality feedback
+before calling a plan "wrong".
 
 ## What to look for
 

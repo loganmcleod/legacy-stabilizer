@@ -8,6 +8,8 @@ Follow `${CLAUDE_PLUGIN_ROOT}/skills/legacy-stabilizer/SKILL.md`, Phases 0 and 2
 
 Context from user: $ARGUMENTS
 
+0. If `evidence/BACKGROUND_DOSSIER.md` exists (from `stabilize-init`), read it
+   first and use it to pre-fill the charter; confirm each item with the user.
 1. **Charter (Phase 0):** emit `CHARTER.md` from `templates/CHARTER.md` and fill
    it — business-critical journeys, current production symptoms, repos in scope,
    exclusions, and the Mode. Leave the Authorization table empty for an

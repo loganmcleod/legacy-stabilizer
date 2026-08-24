@@ -30,6 +30,9 @@ Compare the result against `EXPECTED.md`.
 | `angularjs-listener-leak/` | AngularJS | uncleaned `$on`/`$interval` vs cleanup on `$destroy` |
 | `oracle-fullscan/` | Oracle | full scan needs a plan; small-table scan is fine |
 
-These three cover the highest-value traps. The design brief lists five more
-(stateless vs stateful singletons, transaction-boundary variants, an empty
-workspace, and a multi-repo version-skew case) — add them as the skill matures.
+These three cover the highest-value traps. The `detectors-angular-nx.md` detectors
+(Angular 17 RxJS subscription leaks, NX module-boundary violations) have **no
+fixture yet** — add an Angular subscription-leak pair and an NX boundary pair. The
+design brief lists five more (stateless vs stateful singletons, transaction-boundary
+variants, an empty workspace, and a multi-repo version-skew case) — add them as the
+skill matures.

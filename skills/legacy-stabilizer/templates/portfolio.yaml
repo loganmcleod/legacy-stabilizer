@@ -11,7 +11,8 @@ repositories:
     path: /abs/path/or/canonical/url
     sha: unknown                      # pinned commit SHA
     default_branch: unknown
-    build_system: unknown             # java/maven, javascript/npm, ...
+    build_system: unknown             # java/maven, javascript/nx, javascript/angular, javascript/npm, ...
+    tech_stack: []                    # e.g. angularjs-1.x, angular-17, nx-17.3, spring-boot-2.7, hibernate-5.6, java-21, oracle-19c
     deployables: []                   # services, web apps, jobs, migration projects
     database_schemas: []              # Oracle schemas this repo touches
     upstream_dependencies: []         # repos/services it calls

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this document as the design brief and introductory prompt for creating a reusable Claude Code skill/plugin that assesses and stabilizes complex polyrepo applications built with AngularJS 1.x, Java/Spring Boot, and Oracle.
+Use this document as the design brief and introductory prompt for creating a reusable Claude Code skill/plugin that assesses and stabilizes complex polyrepo applications built with AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c.
 
 The skill must optimize for production stability, defect reduction, regression prevention, and measurable performance improvement. Architectural modernization is a supporting tactic, not the default objective. Preserve behavior and existing contracts unless evidence shows that a narrow structural change is required to remove a material operational risk.
 
@@ -10,7 +10,7 @@ The skill is an engineering-quality and performance workflow. It must not perfor
 
 ## Recommended Claude Code Opening Prompt
 
-> Act as a Principal Software Architect and Stabilization Engineer for legacy AngularJS 1.x, Java/Spring Boot, and Oracle systems. Your first objective is to reduce production risk, defects, regressions, and performance bottlenecks at the lowest safe cost. Do not assume that modernization or broad refactoring is desirable.
+> Act as a Principal Software Architect and Stabilization Engineer for legacy and modern systems built on AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c. Your first objective is to reduce production risk, defects, regressions, and performance bottlenecks at the lowest safe cost. Do not assume that modernization or broad refactoring is desirable.
 >
 > Begin in read-only discovery mode. Map the polyrepo topology, build and deployment boundaries, runtime call paths, test coverage, observability, ownership, and persistence patterns. Separate confirmed findings from suspected risks. Never claim a database indexing problem, N+1 query, transaction defect, memory leak, or production bottleneck without stating the evidence and confidence level.
 >
@@ -99,8 +99,9 @@ For each repository, identify:
 
 - build roots and package/module boundaries;
 - deployable services, web applications, scheduled jobs, and database migration projects;
-- AngularJS modules, routes, controllers, directives, services, factories, interceptors, and templates;
-- Spring controllers, services, domain objects, repositories/DAOs, transaction annotations, schedulers, listeners, and integration clients;
+- AngularJS 1.x modules, routes, controllers, directives, services, factories, interceptors, and templates;
+- Angular 17 apps/libs, standalone components and NgModules, services, routes, HTTP clients/interceptors, and the NX 17.3.x workspace (`nx.json`, `project.json`, module-boundary tags, project graph);
+- Spring Boot 2.7 controllers, services, domain objects, Hibernate 5.6 repositories/DAOs, transaction annotations, schedulers, listeners, and integration clients (Java 21);
 - Oracle access paths including JPA, Hibernate, Spring JDBC, MyBatis, stored procedures, native SQL, and dynamic SQL builders;
 - cross-repo HTTP, messaging, shared-library, file, and database coupling;
 - CI checks, test types, code coverage if trustworthy, release process, feature flags, and observability hooks.
@@ -134,7 +135,7 @@ Exit criterion: each top-priority concern has either a measurable baseline or an
 Trace the few workflows that dominate customer impact or operational cost. A runtime-path record should follow:
 
 ```text
-AngularJS route/template
+Angular 17 route/component or AngularJS route/template
   -> controller/component/directive
   -> client service / HTTP adapter
   -> Spring endpoint and request mapping
@@ -162,6 +163,19 @@ Review candidates for:
 - shared mutable state on services or `$rootScope` that creates action-at-a-distance regressions.
 
 Evidence may include static coordinates, watcher profiling, heap snapshots, detached DOM nodes, network traces, digest timing, and a reproducible navigation loop.
+
+#### Angular 17 & NX 17.3.x
+
+Review candidates for:
+
+- RxJS subscriptions without teardown (`takeUntilDestroyed`, `takeUntil`, `async` pipe) held in long-lived services or reused components;
+- default (non-`OnPush`) change detection on hot trees, function calls and impure pipes in templates, heavy work in template-bound getters;
+- `HttpClient` used outside a data-access service or without cancellation on navigation; duplicate/waterfall requests;
+- mutable state on `providedIn: 'root'` singletons or cross-component subjects; services unintentionally provided at multiple levels;
+- missing lazy loading / bundle bloat; inconsistent NgModule vs standalone usage;
+- NX `enforce-module-boundaries` violations, deep imports bypassing lib barrels, circular project/file dependencies, undeclared implicit dependencies that break `nx affected`/caching.
+
+Evidence may include static coordinates, RxJS/change-detection profiling, heap snapshots with retained-subscription counts, bundle/stats output, and `nx graph` / `enforce-module-boundaries` lint output for any boundary or cycle claim.
 
 #### Spring Boot / Java
 
@@ -324,7 +338,7 @@ Do not create broad rules that produce noise or freeze legitimate legacy pattern
 The skill should create documentation proportionate to the system, using lightweight C4-style views and targeted runtime diagrams:
 
 1. **System context:** users, external systems, and the polyrepo application boundary.
-2. **Container/deployable view:** AngularJS applications, Spring services/jobs, integration components, and Oracle schemas.
+2. **Container/deployable view:** AngularJS 1.x and Angular 17 (NX) applications, Spring Boot services/jobs, integration components, and Oracle schemas.
 3. **Component hot-spot view:** only for high-risk/high-change areas.
 4. **Critical runtime sequences:** the most important user and batch workflows.
 5. **Data ownership map:** authoritative sources, shared tables/schemas, and cross-service database access.
@@ -432,6 +446,7 @@ legacy-stabilization/
 ├── references/
 │   ├── workflow.md
 │   ├── detectors-angularjs.md
+│   ├── detectors-angular-nx.md
 │   ├── detectors-spring.md
 │   ├── detectors-oracle.md
 │   ├── triage-model.md
@@ -445,7 +460,7 @@ legacy-stabilization/
 
 Recommended skill description:
 
-> Assess and stabilize complex legacy AngularJS, Java/Spring Boot, and Oracle polyrepos by mapping architecture, validating engineering and performance risks, prioritizing low-cost/high-impact remediation, and producing evidence-backed plans. Use for stabilization audits and narrowly scoped remediation planning; do not use for security reviews or greenfield redesign.
+> Assess and stabilize complex legacy AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c polyrepos by mapping architecture, validating engineering and performance risks, prioritizing low-cost/high-impact remediation, and producing evidence-backed plans. Use for stabilization audits and narrowly scoped remediation planning; do not use for security reviews or greenfield redesign.
 
 Keep platform-neutral logic in `SKILL.md` and `references/`. Treat Claude Code commands/hooks/subagents as optional adapters so the core workflow remains portable. If packaged as a Claude Code plugin, document the minimum supported Claude Code version and validate its current plugin manifest/command conventions against the installed version rather than hardcoding assumptions in this brief.
 
@@ -465,12 +480,13 @@ Test the skill against representative fixtures before relying on it:
 
 1. A clean small application where scanners must avoid false positives.
 2. An AngularJS fixture with both correctly cleaned and leaking listeners/watchers.
-3. A Spring fixture with safe stateless singletons and unsafe request-specific instance state.
-4. Transaction fixtures covering valid, missing, overly broad, and proxy-bypassed boundaries.
-5. Oracle fixtures where a full scan is both optimal and harmful, proving the skill requires plan context.
-6. An N+1 fixture with query-count evidence and a false-positive loop that uses an in-memory collection.
-7. A multi-repo workflow with version skew and deployment-order constraints.
-8. An empty/incomplete workspace where the skill reports limitations without fabricated findings.
+3. An Angular 17 fixture with a correctly torn-down subscription (`async` pipe / `takeUntilDestroyed`) versus a leaking one, and an NX fixture with a clean import versus an `enforce-module-boundaries` violation.
+4. A Spring fixture with safe stateless singletons and unsafe request-specific instance state.
+5. Transaction fixtures covering valid, missing, overly broad, and proxy-bypassed boundaries.
+6. Oracle fixtures where a full scan is both optimal and harmful, proving the skill requires plan context.
+7. An N+1 fixture with query-count evidence and a false-positive loop that uses an in-memory collection.
+8. A multi-repo workflow with version skew and deployment-order constraints.
+9. An empty/incomplete workspace where the skill reports limitations without fabricated findings.
 
 Acceptance criteria:
 

@@ -5,7 +5,25 @@ command to run, the decision to make at its gate, the artifact it produces, and 
 condition that lets you proceed. Do not skip a gate.
 
 If you only read one thing, read this. The `references/` files are the detail
-behind each step.
+behind each step. Throughout, the workflow explains everything in plain language —
+like you are five — so you never need to already know the jargon.
+
+---
+
+## Fastest start — let the setup skill do it for you
+
+New to this? Run one command and answer the questions:
+
+```
+/legacy-stabilizer:stabilize-init
+```
+
+It asks — in plain words — for the full paths to your code folders, a folder of
+background notes (reverse-engineered business cases, SQL, bug lists, UI→API→SQL
+flows, Jira dumps), your most important user journeys, and what is going wrong. It
+makes the workspace for you, organizes those notes into one
+`evidence/BACKGROUND_DOSSIER.md`, asks if you are ready, and then starts Phase 0
+below. If you use it, you can skip Steps 0–1 (it does them) and pick up at Step 2.
 
 ---
 
@@ -188,6 +206,7 @@ For any L6–L7 intervention, write a `DECISION_RECORD.md` first.
 
 | Step | Command | Produces | Proceed when |
 |---|---|---|---|
+| setup | `stabilize-init` | workspace + `BACKGROUND_DOSSIER.md` + inputs gathered | user says "ready" |
 | 0 | (scaffold) | workspace + blank charter | structure exists |
 | 1 | `stabilize-baseline` | `CHARTER.md` | scope + mode explicit |
 | 2 | `stabilize-inventory` | `inventory.json`, `portfolio.yaml`, maps | critical repos + SHAs named |

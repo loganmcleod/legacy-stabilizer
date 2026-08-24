@@ -9,8 +9,8 @@ elements explicitly**.
 
 1. **System context** — users, external systems, and the polyrepo application
    boundary.
-2. **Container / deployable view** — AngularJS apps, Spring services/jobs,
-   integration components, Oracle schemas.
+2. **Container / deployable view** — AngularJS 1.x and Angular 17 (NX) apps,
+   Spring Boot services/jobs, integration components, Oracle schemas.
 3. **Component hot-spot view** — only for high-risk / high-change areas.
 4. **Critical runtime sequences** — the most important user and batch workflows.
 5. **Data ownership map** — authoritative sources, shared tables/schemas,
@@ -24,7 +24,7 @@ Container view:
 
 ```mermaid
 flowchart LR
-  UI[AngularJS SPA] -->|HTTPS/JSON| API[Spring Boot: orders-api]
+  UI[Angular 17 SPA / AngularJS SPA] -->|HTTPS/JSON| API[Spring Boot: orders-api]
   API -->|JDBC| ORA[(Oracle: ORDERS schema)]
   API -->|HTTP| PAY[payments-service]
   JOB[Spring batch: nightly-recon] --> ORA
