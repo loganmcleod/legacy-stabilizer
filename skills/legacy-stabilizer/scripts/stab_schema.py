@@ -28,6 +28,20 @@ STATUSES = [
 # heaviest evidence burden in validate_plan.py.
 COMMITTED_STATUSES = ["Confirmed", "Planned", "In Progress", "Verified"]
 
+# Strongest-first precedence, used to pick the canonical record when merging
+# duplicates. This is NOT the workflow order (STATUSES) — a Verified/Confirmed
+# finding outranks a bare Candidate regardless of workflow position.
+STATUS_STRENGTH = [
+    "Verified",
+    "Confirmed",
+    "In Progress",
+    "Planned",
+    "Validating",
+    "Candidate",
+    "Deferred",
+    "Rejected",
+]
+
 CONFIDENCE = ["High", "Medium", "Low"]
 
 # Evidence states used in prose/artifacts (distinct from workflow Status).

@@ -17,5 +17,7 @@ the scoring and intervention ladder in `references/triage-model.md`.
    Keep it a concise decision index; push detailed evidence into repo-local files.
 5. Gate it:
    `python ${CLAUDE_PLUGIN_ROOT}/skills/legacy-stabilizer/scripts/validate_plan.py evidence/findings.json --plan REMEDIATION_MASTER_PLAN.md`
+   Run `--plan` only against your FILLED plan — the blank template intentionally
+   contains `...` placeholders and will warn.
 
 This is where **assessment mode ends**. Remediation is a separate, authorized step.

@@ -103,6 +103,24 @@ def test_normalize_flags_duplicates():
     assert len(report["duplicate_groups"]) == 1
 
 
+def test_merge_duplicates():
+    a = good_finding(id="STAB-DB-0001", status="Candidate", confidence="Low",
+                     repositories=[{"repo": "orders-api", "sha": "aaaaaaa"}],
+                     evidence_links=["e1"])
+    b = good_finding(id="STAB-DB-0002", status="Confirmed", confidence="High",
+                     repositories=[{"repo": "billing", "sha": "bbbbbbb"}],
+                     evidence_links=["e2"])  # same root cause + coords + path as a
+    c = good_finding(id="STAB-DB-0003", root_cause="unrelated cause")
+    merged, merge_map = norm.merge_duplicates([a, b, c])
+    assert len(merged) == 2  # a+b collapse, c stands alone
+    canonical = next(f for f in merged if "merged_ids" in f)
+    assert canonical["id"] == "STAB-DB-0002"          # Confirmed/High wins
+    assert canonical["merged_ids"] == ["STAB-DB-0001"]
+    assert len(canonical["repositories"]) == 2         # repos unioned
+    assert set(canonical["evidence_links"]) == {"e1", "e2"}  # no evidence lost
+    assert merge_map["STAB-DB-0002"] == ["STAB-DB-0001"]
+
+
 def test_plan_gate():
     # Clean committed finding passes the gate.
     assert vp.gate([good_finding()]) == []

@@ -163,6 +163,8 @@ legacy-stabilizer/
 ├── docs/
 │   ├── PLAYBOOK.md                 # prescriptive step-by-step run (start here)
 │   └── DESIGN_BRIEF.md             # full design rationale
+├── fixtures/                       # true/false-positive pairs proving the detectors
+├── .github/                        # CI: self-checks + manifest validation on push
 ├── LICENSE
 └── README.md
 ```
@@ -176,9 +178,10 @@ scanner emits candidates, humans and agents confirm them.
 cd skills/legacy-stabilizer/scripts
 
 python inventory_workspace.py ~/work/my-estate --out inventory.json
-python normalize_findings.py evidence/findings.json
+python normalize_findings.py evidence/findings.json                    # validate + flag dupes
+python normalize_findings.py evidence/findings.json --out merged.json --merge  # collapse dupes
 python validate_plan.py evidence/findings.json --plan REMEDIATION_MASTER_PLAN.md
-python test_scripts.py        # 11 self-checks, stdlib only
+python test_scripts.py        # 12 self-checks, stdlib only
 ```
 
 `validate_plan.py` exits non-zero if any committed finding is missing evidence,
@@ -204,9 +207,15 @@ plan.
 ## Development
 
 ```bash
-python skills/legacy-stabilizer/scripts/test_scripts.py
-claude plugin validate . --strict
+python skills/legacy-stabilizer/scripts/test_scripts.py   # helper self-checks
+python .github/scripts/check_manifests.py                 # manifests + front matter
+claude plugin validate . --strict                         # full schema check (needs the CLI)
 ```
+
+CI runs the first two on every push (see `.github/workflows/ci.yml`). The
+`fixtures/` directory holds true/false-positive pairs you can point the skill at to
+confirm the detectors distinguish a real defect from a look-alike — see
+`fixtures/README.md`.
 
 The core logic lives in `SKILL.md` and `references/` and is platform-neutral. The
 `commands/` and `agents/` directories are Claude Code adapters — the workflow

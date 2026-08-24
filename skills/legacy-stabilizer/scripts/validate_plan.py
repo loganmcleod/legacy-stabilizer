@@ -7,7 +7,9 @@ unresolved placeholders (TODO, TBD, ..., <fill me>). This is the check that stop
 a half-written plan from being treated as decision-ready.
 
 Accepts the findings registry (JSON). Optionally also scans a master-plan
-markdown file for leftover placeholder tokens in committed sections.
+markdown file for leftover placeholder tokens in committed sections. Run --plan
+against a FILLED plan, not the blank template — the template is full of `...`
+placeholders on purpose and will (correctly) produce warnings.
 
 Usage:
     python validate_plan.py findings.json [--plan REMEDIATION_MASTER_PLAN.md]
