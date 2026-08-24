@@ -1,0 +1,15 @@
+{
+  "name": "legacy-stabilizer-marketplace",
+  "description": "Stabilization-first assessment and remediation for legacy AngularJS/Spring/Oracle polyrepos.",
+  "owner": {
+    "name": "Logan McLeod"
+  },
+  "plugins": [
+    {
+      "name": "legacy-stabilizer",
+      "description": "Assess and stabilize legacy AngularJS/Spring/Oracle polyrepos. Assessment-first, remediation opt-in.",
+      "version": "0.1.0",
+      "source": "./"
+    }
+  ]
+}

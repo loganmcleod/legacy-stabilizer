@@ -1,0 +1,20 @@
+# Portfolio manifest for a stabilization workspace.
+# Fill every field. Use `unknown` where evidence is missing — never guess.
+# Seed the repository list from evidence/inventory.json, then complete by hand.
+
+portfolio_revision: unknown           # e.g. 2026-08-23 snapshot label
+assessment_date: unknown
+production_telemetry_available: unknown   # yes | no | partial
+
+repositories:
+  - id: orders-api
+    path: /abs/path/or/canonical/url
+    sha: unknown                      # pinned commit SHA
+    default_branch: unknown
+    build_system: unknown             # java/maven, javascript/npm, ...
+    deployables: []                   # services, web apps, jobs, migration projects
+    database_schemas: []              # Oracle schemas this repo touches
+    upstream_dependencies: []         # repos/services it calls
+    downstream_dependencies: []       # repos/services that call it
+    production_criticality: unknown   # high | medium | low
+    owner: unknown

@@ -1,0 +1,25 @@
+{
+  "findings": [
+    {
+      "id": "STAB-XX-0001",
+      "status": "Candidate",
+      "confidence": "Low",
+      "repositories": [{"repo": "repo-id", "sha": "unknown"}],
+      "coordinates": "File.ext:LINE-LINE or symbol / SQL ID / endpoint / Oracle object",
+      "runtime_path": "business workflow affected",
+      "observed_behavior": "what was actually measured or reproduced",
+      "root_cause": "hypothesis (label it) or confirmed cause",
+      "impact": ["performance"],
+      "frequency": "how often / under what conditions",
+      "minimum_intervention": "smallest credible change; intervention level Lx",
+      "alternatives": ["observe only", "accept debt"],
+      "verification": "tests and before/after measures",
+      "rollback": "concrete reversal mechanism",
+      "owner": "team",
+      "effort": 3,
+      "blast_radius": 3,
+      "regression_risk": 3,
+      "evidence_links": ["repositories/repo-id/PERFORMANCE_EVIDENCE.md#stab-xx-0001"]
+    }
+  ]
+}
