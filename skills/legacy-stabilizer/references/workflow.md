@@ -23,6 +23,10 @@ Define, in writing, before touching any code:
 - Whether this run is **assessment-only** or **authorizes implementation** (name
   who authorized it and for which findings/repos).
 
+Record this in `CHARTER.md` (seed from `templates/CHARTER.md`). The charter's Mode
+and Authorization table are the gate that `stabilize-remediate` reads before any
+code change.
+
 Change boundaries that hold unless separately authorized:
 
 - No production code changes during discovery.
@@ -156,7 +160,8 @@ default remediation order:
 
 Choose from the intervention ladder (`triage-model.md`), stopping at the lowest
 level that meets the objective. Every recommendation must explain why lower levels
-are insufficient. Levels 6–7 require explicit approval and a decision record.
+are insufficient. Levels 6–7 require explicit approval and a decision record
+(seed from `templates/DECISION_RECORD.md`).
 
 ---
 

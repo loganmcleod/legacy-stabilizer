@@ -156,7 +156,9 @@ def main(argv=None) -> int:
     data = build_inventory(ws)
     text = json.dumps(data, indent=2)
     if args.out:
-        Path(args.out).write_text(text)
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
         print(f"wrote {args.out} ({data['repository_count']} repos)", file=sys.stderr)
     else:
         print(text)

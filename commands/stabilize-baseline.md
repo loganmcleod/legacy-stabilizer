@@ -8,10 +8,11 @@ Follow `${CLAUDE_PLUGIN_ROOT}/skills/legacy-stabilizer/SKILL.md`, Phases 0 and 2
 
 Context from user: $ARGUMENTS
 
-1. **Charter (Phase 0):** record business-critical journeys, current production
-   symptoms, repos in scope, exclusions, and the mode (assessment-only or
-   remediation-authorized, naming who authorized it). Restate the change
-   boundaries.
+1. **Charter (Phase 0):** emit `CHARTER.md` from `templates/CHARTER.md` and fill
+   it — business-critical journeys, current production symptoms, repos in scope,
+   exclusions, and the Mode. Leave the Authorization table empty for an
+   assessment-only run; a remediation-authorized run needs a row per finding/repo
+   naming who authorized it. This file is the gate `stabilize-remediate` reads.
 2. **Baseline (Phase 2):** collect available evidence — incidents/defects, latency
    and error/throughput/saturation metrics, JVM/GC, browser performance, DB wait
    events, slow-query evidence and plans, existing tests, reproducible failing

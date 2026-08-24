@@ -48,8 +48,10 @@ If authorization is not explicit, stay in assessment mode and say so.
 
 ## How to run
 
-Work the phases in order; do not advance past a gate until its exit criterion is
-met. Full detail is in `references/workflow.md`.
+For a prescriptive step-by-step run — the exact command sequence, the decision at
+each gate, and the artifact each step produces — follow `docs/PLAYBOOK.md`. Work
+the phases in order; do not advance past a gate until its exit criterion is met.
+Full detail is in `references/workflow.md`.
 
 | Phase | Focus | Reference |
 |---|---|---|
@@ -84,10 +86,12 @@ Self-check the helpers with `python scripts/test_scripts.py`.
 Follow the workspace layout and schemas in `references/artifact-schemas.md`. Seed
 new artifacts from `templates/`:
 
+- `CHARTER.md` — scope, mode, and the remediation authorization table (the gate).
 - `portfolio.yaml` — repo manifest (mark unknowns `unknown`).
 - `INITIAL_HEALTH_BASELINE.md` — first assessment output.
 - `REMEDIATION_MASTER_PLAN.md` — ranked cross-repo decision index.
 - `evidence/findings.json` — canonical finding registry.
+- `DECISION_RECORD.md` — for L6–L7 interventions and boundary changes.
 
 If a repository is empty or its sources are unavailable, report the limitation and
 stop short of inventing a baseline.

@@ -8,14 +8,16 @@ scripts stay useful.
 
 ```
 stabilization-workspace/
+├── CHARTER.md                         # scope, mode, remediation authorization gate
 ├── portfolio.yaml                     # repos, paths, revisions, owners, deployables
+├── INITIAL_HEALTH_BASELINE.md         # first assessment output
 ├── REMEDIATION_MASTER_PLAN.md         # ranked cross-repo decision index
 ├── architecture/
 │   ├── system-context.md
 │   ├── container-map.md
 │   ├── runtime-paths.md
 │   ├── dependency-map.md
-│   └── decision-log.md
+│   └── decision-log.md                # accepted/rejected decisions (DECISION_RECORD entries)
 ├── evidence/
 │   ├── inventory.json                 # output of inventory_workspace.py
 │   ├── findings.json                  # normalized finding registry

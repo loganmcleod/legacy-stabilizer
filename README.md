@@ -86,7 +86,22 @@ work either way.
 
 ## Usage
 
-Start with the router, or jump to a phase. Commands are namespaced
+> **New here? Follow [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md).** It is the
+> prescriptive, step-by-step run — the exact command order, the decision to make at
+> each gate, the artifact each step produces, and when you are allowed to proceed.
+> The table below is the quick reference; the playbook is the procedure.
+
+The helper scripts need **Python 3.8+** on your PATH. Start by scaffolding a
+workspace *outside* the code under assessment and seeding the charter:
+
+```bash
+mkdir -p stabilization-workspace/{architecture,evidence,repositories}
+cd stabilization-workspace
+cp <skill>/templates/CHARTER.md .        # scope + authorization gate
+cp <skill>/templates/portfolio.yaml .    # repo manifest
+```
+
+Then start with the router, or jump to a phase. Commands are namespaced
 `/legacy-stabilizer:<command>`:
 
 | Command | Phase | Does | Mode |
@@ -99,11 +114,11 @@ Start with the router, or jump to a phase. Commands are namespaced
 | `/legacy-stabilizer:stabilize-plan` | 6 | Triage → ranked master plan | read-only |
 | `/legacy-stabilizer:stabilize-remediate <finding-id>` | 7–10 | Design → implement → release → prevent | **authorization-gated** |
 
-Typical first run (assessment-only):
+Typical first run (assessment-only), after scaffolding the workspace above:
 
 ```
+/legacy-stabilizer:stabilize-baseline "checkout is slow; nightly recon fails"
 /legacy-stabilizer:stabilize-inventory ~/work/my-estate
-/legacy-stabilizer:stabilize-baseline
 /legacy-stabilizer:stabilize-trace checkout
 /legacy-stabilizer:stabilize-findings all
 /legacy-stabilizer:stabilize-plan
@@ -142,10 +157,12 @@ legacy-stabilizer/
 │   │   ├── validate_plan.py        # gate: evidence/verify/rollback/owner present
 │   │   ├── stab_schema.py          # shared schema + validation
 │   │   └── test_scripts.py         # self-checks
-│   └── templates/                  # portfolio.yaml, master plan, baseline, finding.json
+│   └── templates/                  # CHARTER, portfolio, master plan, baseline, finding, decision record
 ├── commands/                       # six phase slash commands (plugin)
 ├── agents/stabilization-assessor.md# read-only discovery subagent (plugin)
-├── docs/DESIGN_BRIEF.md            # full design rationale
+├── docs/
+│   ├── PLAYBOOK.md                 # prescriptive step-by-step run (start here)
+│   └── DESIGN_BRIEF.md             # full design rationale
 ├── LICENSE
 └── README.md
 ```

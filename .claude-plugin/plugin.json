@@ -6,6 +6,8 @@
   "author": {
     "name": "Logan McLeod"
   },
+  "homepage": "https://github.com/loganmcleod/legacy-stabilizer",
+  "repository": "https://github.com/loganmcleod/legacy-stabilizer",
   "license": "MIT",
   "keywords": [
     "legacy",
