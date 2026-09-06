@@ -25,6 +25,10 @@ and [GitHub Spec Kit](https://github.com/github/spec-kit).
 > check that it made sense. It changes *how* things are explained, never *what* the
 > workflow does.
 
+**Current release: [v0.3.0](https://github.com/loganmcleod/legacy-stabilizer/releases/tag/v0.3.0)** —
+see [`CHANGELOG.md`](CHANGELOG.md) for what changed and the
+[releases page](https://github.com/loganmcleod/legacy-stabilizer/releases) for notes.
+
 ---
 
 ## Why this exists
