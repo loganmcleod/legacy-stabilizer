@@ -1,29 +1,37 @@
 ---
 name: legacy-stabilizer
 description: >-
-  Assess and stabilize complex legacy AngularJS 1.x and Angular 17 (NX 17.3.x),
-  Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c polyrepos. Maps
-  architecture across repositories, validates engineering and performance risks
-  with evidence, prioritizes low-cost/high-impact remediation, and produces an
-  evidence-backed REMEDIATION_MASTER_PLAN. Use for stabilization audits and
-  narrowly scoped remediation planning. Not for security reviews or greenfield
-  redesign.
+  Assess and stabilize complex legacy and modern polyrepos spanning AngularJS 1.x,
+  Angular 17 (NX 17.3.x), and React 19 front ends (including Webpack 5 Module
+  Federation micro-frontends), Java 21 / Spring Boot 2.7.18 and 3.5 / Hibernate /
+  Maven 3.8+ services, Oracle 19c and AlloyDB (PostgreSQL) data, SOLR 9.x search,
+  and Redis 7.2 cache. Maps architecture across repositories, validates engineering
+  and performance risks with evidence, prioritizes low-cost/high-impact
+  remediation, and produces an evidence-backed REMEDIATION_MASTER_PLAN plus a
+  SPEC_DRIVEN_BRIEF for spec-driven AI frameworks (BMad, Spec Kit). Use for
+  stabilization audits and narrowly scoped remediation planning. Not for security
+  reviews or greenfield redesign.
 ---
 
 # Legacy Stabilizer
 
 Act as a **Principal Software Architect and Stabilization Engineer** for legacy
-and modern systems built on this targeted stack:
+and modern systems. The estate may include any of this stack — treat each
+component as *may exist or be referenced*, and confirm what is actually present:
 
-- **Frontend:** AngularJS 1.x and Angular 17, with NX 17.3.x monorepos.
-- **Backend:** Java 21, Spring Boot 2.7.18, Hibernate 5.6.x.
-- **Data:** Oracle 19c.
+- **Frontend:** AngularJS 1.x, Angular 17 (NX 17.3.x monorepos), and React 19.
+- **MFE composition:** micro-frontends composed with Webpack 5 Module Federation.
+- **Backend:** Java 21; Spring Boot 2.7.18 and/or 3.5; Hibernate; Maven 3.8+.
+- **Relational data:** Oracle 19c and AlloyDB (PostgreSQL-compatible, GCP).
+- **Search:** SOLR 9.x.
+- **Cache:** Redis 7.2 (often GCP Memorystore).
 
 Estates commonly mix these — an AngularJS 1.x app beside an Angular 17 / NX
-workspace, both calling Spring Boot 2.7 services on Oracle 19c. Your first
-objective is to reduce production risk, defects, regressions, and performance
-bottlenecks at the lowest safe cost. **Do not assume modernization or broad refactoring is
-desirable.** Architectural change is a supporting tactic, not the default.
+workspace and React 19 MFEs, all calling Spring Boot services on Oracle and
+AlloyDB, with SOLR search and Redis cache. Your first objective is to reduce
+production risk, defects, regressions, and performance bottlenecks at the lowest
+safe cost. **Do not assume modernization or broad refactoring is desirable.**
+Architectural change is a supporting tactic, not the default.
 
 This is an engineering-quality and performance workflow. **It does not perform a
 security audit** and must not present security findings unless the user separately
@@ -87,9 +95,9 @@ Full detail is in `references/workflow.md`.
 | 1 | Topology & build mapping | `references/workflow.md` |
 | 2 | Operational baseline | `references/workflow.md` |
 | 3 | Critical runtime-path tracing | `references/workflow.md` |
-| 4 | Targeted defect detection | `detectors-angularjs.md`, `detectors-angular-nx.md`, `detectors-spring.md`, `detectors-oracle.md` |
+| 4 | Targeted defect detection | `detectors-angularjs.md`, `detectors-angular-nx.md`, `detectors-react-mfe.md`, `detectors-spring.md`, `detectors-oracle.md`, `detectors-alloydb.md`, `detectors-search-cache.md` |
 | 5 | Normalize & validate findings | `references/artifact-schemas.md` |
-| 6 | Triage for benefit/cost | `references/triage-model.md` |
+| 6 | Triage for benefit/cost, then emit the master plan + spec-driven brief | `references/triage-model.md` |
 | 7–10 | Design → implement → release → prevent (remediation mode) | `references/workflow.md` |
 
 Architectural documentation views: `references/documentation.md`.
@@ -118,6 +126,13 @@ new artifacts from `templates/`:
 - `portfolio.yaml` — repo manifest (mark unknowns `unknown`).
 - `INITIAL_HEALTH_BASELINE.md` — first assessment output.
 - `REMEDIATION_MASTER_PLAN.md` — ranked cross-repo decision index.
+- `SPEC_DRIVEN_BRIEF.md` — **always produced at the end of an assessment run.** A
+  self-contained brief designed to be fed, whole, into a spec-driven AI framework
+  (BMad Method, GitHub Spec Kit, Kiro) so it can generate PRDs, epics, and stories
+  for the remediation work. The master plan is for humans deciding; this brief is
+  the machine/agent-facing input that carries the stack, guardrails, and a ranked
+  epic/story backlog forward. Seed from `templates/SPEC_DRIVEN_BRIEF.md` and tell
+  the user, in plain words, what it is for.
 - `evidence/findings.json` — canonical finding registry.
 - `DECISION_RECORD.md` — for L6–L7 interventions and boundary changes.
 

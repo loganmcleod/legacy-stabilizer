@@ -169,11 +169,19 @@ python <scripts>/validate_plan.py evidence/findings.json --plan REMEDIATION_MAST
 **Decision:** which findings clear the gate and are worth doing first? A high score
 with weak evidence is a lead to strengthen, not work to schedule.
 
-**Artifact:** `REMEDIATION_MASTER_PLAN.md`.
-**Gate:** `validate_plan.py` exits 0.
+Then **always also emit `SPEC_DRIVEN_BRIEF.md`** (seed from
+`templates/SPEC_DRIVEN_BRIEF.md`). This is the same portfolio rewritten as a
+self-contained brief — product context, tech stack, hard guardrails, and the ranked
+work as epics and stories — designed to be pasted straight into a spec-driven AI
+framework (BMad Method, GitHub Spec Kit, Kiro) to generate PRDs and stories. Tell
+the user, in plain words, what it is for and how to hand it off.
 
-**This is the end of an assessment-only run.** The deliverable is the ranked plan.
-Stop here unless you are authorizing changes.
+**Artifacts:** `REMEDIATION_MASTER_PLAN.md` (human decision index) and
+`SPEC_DRIVEN_BRIEF.md` (spec-driven AI input).
+**Gate:** `validate_plan.py` exits 0 and the spec-driven brief is written.
+
+**This is the end of an assessment-only run.** The deliverables are the ranked plan
+and the spec-driven brief. Stop here unless you are authorizing changes.
 
 ---
 
@@ -213,5 +221,5 @@ For any L6–L7 intervention, write a `DECISION_RECORD.md` first.
 | 3 | `stabilize-baseline` | `INITIAL_HEALTH_BASELINE.md` | baseline or acquisition task per concern |
 | 4 | `stabilize-trace` | `runtime-paths.md` | one path traced with evidence |
 | 5 | `stabilize-findings` | `findings.json` | no dupes; committed findings have evidence |
-| 6 | `stabilize-plan` | `REMEDIATION_MASTER_PLAN.md` | `validate_plan.py` exits 0 |
+| 6 | `stabilize-plan` | `REMEDIATION_MASTER_PLAN.md` + `SPEC_DRIVEN_BRIEF.md` | `validate_plan.py` exits 0 |
 | 7 | `stabilize-remediate` | code change + verification | authorized + finding verified |

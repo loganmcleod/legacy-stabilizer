@@ -146,7 +146,28 @@ def test_inventory_on_fixture():
         assert r["repo"] == "orders-api"
         assert "java/maven" in r["build_systems"]
         assert r["sha"] == "unknown"  # not a git repo
-        assert "persistence-oracle" in r["candidate_layers"]
+        assert "persistence-sql" in r["candidate_layers"]
+
+
+def test_inventory_detects_new_stacks():
+    # React MFE repo: webpack marker, tsx counted, react/search/cache layer hints.
+    with tempfile.TemporaryDirectory() as d:
+        ws = Path(d)
+        repo = ws / "shell-ui"
+        (repo / "src" / "hooks").mkdir(parents=True)
+        (repo / "src" / "search").mkdir(parents=True)
+        (repo / "src" / "cache").mkdir(parents=True)
+        (repo / "package.json").write_text("{}")
+        (repo / "webpack.config.js").write_text("module.exports={}")
+        (repo / "src" / "hooks" / "useOrders.tsx").write_text("export{}")
+        data = inv.build_inventory(ws)
+        r = data["repositories"][0]
+        assert "javascript/webpack" in r["build_systems"]
+        assert r["file_counts"].get(".tsx") == 1
+        layers = r["candidate_layers"]
+        assert "presentation-react" in layers
+        assert "search-solr" in layers
+        assert "cache-redis" in layers
 
 
 def test_scripts_run_as_cli():

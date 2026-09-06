@@ -59,12 +59,21 @@ corroborate. For each repository identify:
 - Angular 17 apps/libs, standalone components and NgModules, services, routes,
   HTTP clients/interceptors, and the NX 17.3.x workspace layout (`nx.json`,
   `project.json`, module-boundary tags, project dependency graph);
-- Spring Boot 2.7 controllers, services, domain objects, Hibernate 5.6
-  repositories/DAOs, transaction annotations, schedulers, listeners, integration
-  clients; note the Java 21 / Boot 2.7 / Hibernate 5.6 versions in use;
-- Oracle access paths: JPA, Hibernate, Spring JDBC, MyBatis, stored procedures,
-  native SQL, dynamic SQL builders;
-- cross-repo HTTP, messaging, shared-library, file, and database coupling;
+- React 19 apps, components/hooks, data-access hooks/services, routers; and any
+  micro-frontend composition — Webpack 5 Module Federation host and remotes
+  (`webpack.config.js` / `module-federation.config.js`, `shared`/`exposes`/`remotes`
+  entries, singleton dependency versions);
+- Spring Boot controllers, services, domain objects, Hibernate repositories/DAOs,
+  transaction annotations, schedulers, listeners, integration clients; note the
+  Java 21 / Spring Boot version (2.7.18 vs 3.5, i.e. `javax` vs `jakarta`) /
+  Hibernate version and the Maven 3.8+ build in use;
+- relational access paths on Oracle 19c and AlloyDB (PostgreSQL): JPA, Hibernate,
+  Spring JDBC, MyBatis, stored procedures, native SQL, dynamic SQL builders; note
+  which datastore each repo targets;
+- SOLR 9.x cores/collections, client usage, and indexing paths; Redis 7.2 cache
+  usage (client, key patterns, TTLs), including GCP Memorystore;
+- cross-repo HTTP, messaging, shared-library, file, database, search, and cache
+  coupling;
 - CI checks, test types, trustworthy coverage, release process, feature flags,
   observability hooks.
 
@@ -103,13 +112,13 @@ an explicit evidence-acquisition task.
 Trace the few workflows that dominate customer impact or operational cost:
 
 ```
-Angular 17 route/component or AngularJS route/template
-  -> controller/component/directive
-  -> client service / HTTP adapter
+Angular / AngularJS / React route or component (host or federated MFE remote)
+  -> controller/component/directive/hook
+  -> client service / data-access hook / HTTP adapter
   -> Spring endpoint and request mapping
   -> application/service orchestration
-  -> repository/DAO/stored procedure
-  -> Oracle objects and SQL
+  -> repository/DAO/stored procedure  (and any SOLR query or Redis cache access)
+  -> Oracle / AlloyDB objects and SQL
   -> response mapping and UI state update
 ```
 
@@ -124,8 +133,10 @@ legacy layer.
 ## Phase 4 — Targeted Defect Detection
 
 Apply detectors *after* topology and path mapping, so results rank by real use.
-See `detectors-angularjs.md`, `detectors-angular-nx.md`, `detectors-spring.md`,
-`detectors-oracle.md`.
+See `detectors-angularjs.md`, `detectors-angular-nx.md`, `detectors-react-mfe.md`,
+`detectors-spring.md`, `detectors-oracle.md`, `detectors-alloydb.md`, and
+`detectors-search-cache.md`. Load only the detector files for stacks actually
+present in the estate.
 
 Everything a detector produces is a **Candidate** until corroborated. Assign an
 evidence state: `Confirmed`, `Probable`, `Candidate`, `Not Reproducible`.
@@ -163,7 +174,25 @@ default remediation order:
 7. **Replacement / Strangler Fig** — only for persistently high-cost/high-risk
    areas with a stable seam, migration economics, parallel-run strategy, rollback.
 
-**Assessment mode ends here** with a ranked `REMEDIATION_MASTER_PLAN.md`.
+**Assessment mode ends here** with two deliverables:
+
+1. the ranked `REMEDIATION_MASTER_PLAN.md` (human decision index), and
+2. `SPEC_DRIVEN_BRIEF.md` — **always produced** — seeded from
+   `templates/SPEC_DRIVEN_BRIEF.md`.
+
+The spec-driven brief is a self-contained, machine/agent-facing document designed
+to be fed, whole, into a spec-driven AI development framework (BMad Method, GitHub
+Spec Kit, Amazon Kiro, or similar) so it can generate PRDs, epics, and stories for
+the remediation work. Fill it from the plan, `evidence/findings.json`, the health
+baseline, and `architecture/`: inline the tech stack, the non-negotiable guardrails
+(stabilize-first, preserve contracts, evidence-before-action, intervention ladder),
+the confirmed architecture/critical paths, and the ranked backlog rewritten as
+epics and stories keyed by finding ID. Carry each claim's evidence state and
+confidence so the downstream spec inherits the uncertainty instead of hardening a
+guess into a requirement. Then explain to the user, in plain words, what the file
+is for and how to hand it off — for example: "Paste this page into your
+spec-writing AI tool as the starting document; it already holds the story, the
+stack, the hard rules, and the ranked work as epics and stories."
 
 ---
 

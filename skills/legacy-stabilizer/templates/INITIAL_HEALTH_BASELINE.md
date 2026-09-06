@@ -12,9 +12,12 @@ empty or sources are unavailable, say so and stop short of inventing a baseline.
 ## Layer Locations
 | Layer | Repository | Primary paths/modules | Deployable | Confidence |
 |---|---|---|---|---|
-| Presentation | ... | ... | ... | ... |
-| Service/Application | ... | ... | ... | ... |
-| Persistence/Oracle | ... | ... | ... | ... |
+| Presentation (AngularJS / Angular / React) | ... | ... | ... | ... |
+| MFE composition (Module Federation) | ... | ... | ... | ... |
+| Service/Application (Spring Boot) | ... | ... | ... | ... |
+| Persistence (Oracle / AlloyDB) | ... | ... | ... | ... |
+| Search (SOLR) | ... | ... | ... | ... |
+| Cache (Redis) | ... | ... | ... | ... |
 
 ## Coupling and Criticality Signals
 - High fan-in/fan-out candidates: ...

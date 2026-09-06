@@ -30,6 +30,8 @@ BUILD_MARKERS = {
     "angular.json": "javascript/angular",
     "package.json": "javascript/npm",
     "bower.json": "javascript/bower",
+    "webpack.config.js": "javascript/webpack",
+    "module-federation.config.js": "javascript/module-federation",
     "requirements.txt": "python/pip",
     "pyproject.toml": "python",
     "go.mod": "go",
@@ -40,12 +42,15 @@ BUILD_MARKERS = {
 LAYER_HINTS = {
     "presentation-angularjs": ["controllers", "directives", "webapp", "views"],
     "presentation-angular": ["apps", "libs", "components", "features", "app"],
+    "presentation-react": ["components", "pages", "hooks", "features", "src"],
     "service-spring": ["service", "services", "controller", "web", "rest"],
-    "persistence-oracle": ["repository", "dao", "mapper", "mybatis", "sql", "domain"],
+    "persistence-sql": ["repository", "dao", "mapper", "mybatis", "sql", "domain"],
+    "search-solr": ["solr", "search", "indexing"],
+    "cache-redis": ["cache", "redis"],
 }
 
 # Extensions worth counting to hint at the dominant stack, cheaply.
-COUNT_EXTS = [".java", ".js", ".ts", ".html", ".sql", ".xml"]
+COUNT_EXTS = [".java", ".js", ".jsx", ".ts", ".tsx", ".html", ".sql", ".xml"]
 
 SKIP_DIRS = {".git", "node_modules", "target", "build", "dist", ".idea", "__pycache__"}
 

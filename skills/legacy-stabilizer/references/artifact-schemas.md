@@ -12,6 +12,7 @@ stabilization-workspace/
 ├── portfolio.yaml                     # repos, paths, revisions, owners, deployables
 ├── INITIAL_HEALTH_BASELINE.md         # first assessment output
 ├── REMEDIATION_MASTER_PLAN.md         # ranked cross-repo decision index
+├── SPEC_DRIVEN_BRIEF.md               # spec-driven AI framework input (BMad/Spec Kit); always produced
 ├── architecture/
 │   ├── system-context.md
 │   ├── container-map.md
@@ -43,6 +44,21 @@ known owner. **Unknown values are marked `unknown`, never guessed.** See
 Produced by `inventory_workspace.py`. Topology only — build systems, revisions,
 file counts, candidate layer paths (directory-name heuristics). It never sets
 deployables/owner/criticality; those come back as `unknown` for a human to fill.
+Candidate layer keys include `presentation-angularjs`, `presentation-angular`,
+`presentation-react`, `service-spring`, `persistence-sql` (Oracle or AlloyDB),
+`search-solr`, and `cache-redis`. Build-system labels include `java/maven`,
+`javascript/nx`, `javascript/angular`, `javascript/webpack`, and
+`javascript/module-federation`. Every one is a lead, not proof of a runtime role.
+
+## `SPEC_DRIVEN_BRIEF.md`
+
+Seeded from `templates/SPEC_DRIVEN_BRIEF.md` and produced at the end of every
+assessment run. A self-contained, machine/agent-facing brief meant to be fed whole
+into a spec-driven AI framework (BMad Method, GitHub Spec Kit, Kiro) to generate
+PRDs/epics/stories. It inlines the product context, repo + tech-stack inventory,
+the non-negotiable guardrails, the confirmed architecture, and the ranked
+remediation backlog rewritten as epics/stories keyed by finding ID. It is not
+consumed by the helper scripts; it is a deliverable for downstream tooling.
 
 ## `evidence/findings.json` — the finding record
 

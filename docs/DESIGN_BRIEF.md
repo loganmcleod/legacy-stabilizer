@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Use this document as the design brief and introductory prompt for creating a reusable Claude Code skill/plugin that assesses and stabilizes complex polyrepo applications built with AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c.
+Use this document as the design brief and introductory prompt for creating a reusable Claude Code skill/plugin that assesses and stabilizes complex polyrepo applications. The targeted estate may include any of: AngularJS 1.x, Angular 17 (NX 17.3.x), and React 19 front ends; micro-frontends composed with Webpack 5 Module Federation; Java 21 / Spring Boot 2.7.18 and 3.5 / Hibernate / Maven 3.8+ services; Oracle 19c and AlloyDB (PostgreSQL-compatible, GCP) relational data; SOLR 9.x search; and Redis 7.2 caching (often GCP Memorystore). Treat each as *may exist or be referenced* and confirm what is actually present.
 
 The skill must optimize for production stability, defect reduction, regression prevention, and measurable performance improvement. Architectural modernization is a supporting tactic, not the default objective. Preserve behavior and existing contracts unless evidence shows that a narrow structural change is required to remove a material operational risk.
 
@@ -10,7 +10,7 @@ The skill is an engineering-quality and performance workflow. It must not perfor
 
 ## Recommended Claude Code Opening Prompt
 
-> Act as a Principal Software Architect and Stabilization Engineer for legacy and modern systems built on AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c. Your first objective is to reduce production risk, defects, regressions, and performance bottlenecks at the lowest safe cost. Do not assume that modernization or broad refactoring is desirable.
+> Act as a Principal Software Architect and Stabilization Engineer for legacy and modern systems that may span AngularJS 1.x, Angular 17 (NX 17.3.x), and React 19 front ends (including Webpack 5 Module Federation micro-frontends), Java 21 / Spring Boot 2.7.18 and 3.5 / Hibernate / Maven 3.8+ services, Oracle 19c and AlloyDB (PostgreSQL) data, SOLR 9.x search, and Redis 7.2 cache. Your first objective is to reduce production risk, defects, regressions, and performance bottlenecks at the lowest safe cost. Do not assume that modernization or broad refactoring is desirable.
 >
 > Begin in read-only discovery mode. Map the polyrepo topology, build and deployment boundaries, runtime call paths, test coverage, observability, ownership, and persistence patterns. Separate confirmed findings from suspected risks. Never claim a database indexing problem, N+1 query, transaction defect, memory leak, or production bottleneck without stating the evidence and confidence level.
 >
@@ -101,9 +101,11 @@ For each repository, identify:
 - deployable services, web applications, scheduled jobs, and database migration projects;
 - AngularJS 1.x modules, routes, controllers, directives, services, factories, interceptors, and templates;
 - Angular 17 apps/libs, standalone components and NgModules, services, routes, HTTP clients/interceptors, and the NX 17.3.x workspace (`nx.json`, `project.json`, module-boundary tags, project graph);
-- Spring Boot 2.7 controllers, services, domain objects, Hibernate 5.6 repositories/DAOs, transaction annotations, schedulers, listeners, and integration clients (Java 21);
-- Oracle access paths including JPA, Hibernate, Spring JDBC, MyBatis, stored procedures, native SQL, and dynamic SQL builders;
-- cross-repo HTTP, messaging, shared-library, file, and database coupling;
+- React 19 apps, components/hooks, data-access hooks, routers; and Webpack 5 Module Federation composition (host and remotes, `shared`/`exposes`/`remotes`, singleton dependency versions);
+- Spring Boot controllers, services, domain objects, Hibernate repositories/DAOs, transaction annotations, schedulers, listeners, and integration clients — noting the Boot line (2.7 `javax` vs 3.5 `jakarta`), Java 21, and the Maven 3.8+ build;
+- relational access paths on Oracle 19c and AlloyDB (PostgreSQL) including JPA, Hibernate, Spring JDBC, MyBatis, stored procedures, native SQL, and dynamic SQL builders;
+- SOLR 9.x cores/collections and indexing paths; Redis 7.2 cache usage (client, key patterns, TTLs);
+- cross-repo HTTP, messaging, shared-library, file, database, search, and cache coupling;
 - CI checks, test types, code coverage if trustworthy, release process, feature flags, and observability hooks.
 
 Use language-aware parsing when available. Text search is acceptable for candidate generation but must not be treated as proof of call relationships.
@@ -177,7 +179,18 @@ Review candidates for:
 
 Evidence may include static coordinates, RxJS/change-detection profiling, heap snapshots with retained-subscription counts, bundle/stats output, and `nx graph` / `enforce-module-boundaries` lint output for any boundary or cycle claim.
 
-#### Spring Boot / Java
+#### React 19 & Webpack 5 Module Federation
+
+Review candidates for:
+
+- `useEffect` subscriptions (listeners, intervals, sockets) without a matching cleanup return; the React analogue of the `$destroy`/subscription leak;
+- unstable references (new object/array/function literals, unmemoized context values) forcing re-renders on hot paths; missing `useMemo`/`useCallback`;
+- data fetching in effects without `AbortController`/stale-guard; duplicate or waterfall requests; fetching in components instead of a data-access hook;
+- Module Federation singleton version skew (`shared` React/router/design-system with incompatible `requiredVersion`), unshared heavy deps duplicated across remotes, remotes mounted with no error boundary/timeout/fallback, and host↔remote contract drift.
+
+Evidence may include static coordinates, React Profiler commit counts/render duration, heap snapshots across mount/unmount, bundle/stats output, the resolved federation `shared` config and the actually-loaded version, and a forced remote-outage or version-mismatch reproduction.
+
+#### Spring Boot / Java (Boot 2.7 & 3.5, Maven)
 
 Review candidates for:
 
@@ -189,9 +202,9 @@ Review candidates for:
 - blocking operations on constrained executor/request threads;
 - weak seams for testing critical behavior and hidden static/global dependencies.
 
-Do not classify an anemic model as a defect solely by style. It becomes actionable when centralized procedural logic demonstrably increases defect risk, coupling, test cost, or inconsistent rule enforcement.
+Establish the Boot line first: 2.7 uses `javax.*` + Hibernate 5.6; 3.5 uses `jakarta.*` + Hibernate 6.x and can enable virtual threads (watch for monitor pinning). A mixed estate carries cross-line contract and dependency skew. Do not classify an anemic model as a defect solely by style. It becomes actionable when centralized procedural logic demonstrably increases defect risk, coupling, test cost, or inconsistent rule enforcement.
 
-#### Oracle / Persistence
+#### Oracle 19c / Persistence
 
 Review candidates for:
 
@@ -203,6 +216,14 @@ Review candidates for:
 - transaction duration, lock contention, plan regression, cardinality-estimate errors, and stale statistics where supported by evidence.
 
 Require an execution plan or equivalent runtime proof before asserting a full table scan is harmful. A full scan may be optimal for small tables or low-selectivity queries. Index recommendations must account for write cost, storage, selectivity, existing composite indexes, and plan stability.
+
+#### AlloyDB (PostgreSQL) / Persistence
+
+The same anti-patterns as Oracle, but PostgreSQL semantics: read plans with `EXPLAIN (ANALYZE, BUFFERS)` and query frequency from `pg_stat_statements`; a slow sequential scan may be served by AlloyDB's columnar engine; stale reads may be read-pool replication lag, not app logic; account for autovacuum/table bloat before blaming a query. Do not carry Oracle hint/plan-baseline mechanics into PostgreSQL.
+
+#### SOLR 9.x Search & Redis 7.2 Cache
+
+Review candidates for: SOLR slow/unbounded queries, deep `start` pagination instead of `cursorMark`, per-write hard commits, analyzer mismatch, mis-sized caches, and clients with no timeout/fallback — confirmed with the slow log, `debugQuery`, or cache stats. For Redis: cache stampede on expiry, missing/unbounded TTL or code that treats the cache as durable, blocking O(N) commands (`KEYS`, big `HGETALL`) on the hot path, connection-pool handling, and cache-invalidation correctness — confirmed with `INFO stats`, the slow log, and hit-rate evidence. A cache miss or eviction is not a defect by default.
 
 ### Phase 5 — Normalize and Validate Findings
 
@@ -338,7 +359,7 @@ Do not create broad rules that produce noise or freeze legitimate legacy pattern
 The skill should create documentation proportionate to the system, using lightweight C4-style views and targeted runtime diagrams:
 
 1. **System context:** users, external systems, and the polyrepo application boundary.
-2. **Container/deployable view:** AngularJS 1.x and Angular 17 (NX) applications, Spring Boot services/jobs, integration components, and Oracle schemas.
+2. **Container/deployable view:** AngularJS 1.x, Angular 17 (NX), and React 19 applications (including federated MFE host/remotes), Spring Boot services/jobs, integration components, Oracle 19c and AlloyDB schemas, SOLR 9.x cores, and Redis 7.2 caches.
 3. **Component hot-spot view:** only for high-risk/high-change areas.
 4. **Critical runtime sequences:** the most important user and batch workflows.
 5. **Data ownership map:** authoritative sources, shared tables/schemas, and cross-service database access.
@@ -390,7 +411,13 @@ The master plan is a decision and progress index, not a dump of scanner output. 
 - Detailed Evidence: links to repo-local assessment artifacts
 ```
 
-Line numbers drift, so include stable symbols, commit SHAs, SQL IDs, endpoint mappings, or Oracle object names alongside them.
+Line numbers drift, so include stable symbols, commit SHAs, SQL IDs, endpoint mappings, or Oracle/AlloyDB object names alongside them.
+
+## `SPEC_DRIVEN_BRIEF.md` — spec-driven AI framework input (always produced)
+
+Every assessment run produces a second top-level deliverable alongside the master plan: `SPEC_DRIVEN_BRIEF.md`, seeded from `templates/SPEC_DRIVEN_BRIEF.md`. Its purpose is distinct from the master plan. The master plan is a **human** decision index; the brief is a **self-contained, machine/agent-facing** document designed to be fed, whole, into a spec-driven AI development framework — BMad Method, GitHub Spec Kit (`/specify`), Amazon Kiro, or similar — so that framework can generate PRDs, epics, and stories for the remediation work without re-discovering the estate.
+
+It must be self-contained (a spec agent will not have the workspace), so it inlines: product/domain context and critical journeys; the repository and technology-stack inventory across all layers above; the non-negotiable guardrails restated as constraints the generated specs must carry forward (stabilize-first, preserve contracts, evidence-before-action, one cohesive change per story, the L0–L7 ladder, non-security scope); the confirmed architecture/critical paths as Mermaid; and the ranked remediation backlog rewritten as epics and stories keyed by finding ID, each with acceptance criteria and verification/rollback. Every claim carries its evidence state and confidence so the downstream spec inherits the uncertainty rather than hardening a guess into a firm requirement. The skill must also explain the file's purpose to the user in plain words and tell them to hand it off to their spec-driven tool.
 
 ## Initial Architectural Health Baseline Format
 
@@ -447,8 +474,11 @@ legacy-stabilization/
 │   ├── workflow.md
 │   ├── detectors-angularjs.md
 │   ├── detectors-angular-nx.md
+│   ├── detectors-react-mfe.md
 │   ├── detectors-spring.md
 │   ├── detectors-oracle.md
+│   ├── detectors-alloydb.md
+│   ├── detectors-search-cache.md
 │   ├── triage-model.md
 │   └── artifact-schemas.md
 ├── scripts/
@@ -460,7 +490,7 @@ legacy-stabilization/
 
 Recommended skill description:
 
-> Assess and stabilize complex legacy AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c polyrepos by mapping architecture, validating engineering and performance risks, prioritizing low-cost/high-impact remediation, and producing evidence-backed plans. Use for stabilization audits and narrowly scoped remediation planning; do not use for security reviews or greenfield redesign.
+> Assess and stabilize complex polyrepos spanning AngularJS 1.x, Angular 17 (NX 17.3.x), and React 19 (with Webpack 5 Module Federation MFEs), Java 21 / Spring Boot 2.7.18 and 3.5 / Hibernate / Maven 3.8+, Oracle 19c and AlloyDB (PostgreSQL), SOLR 9.x, and Redis 7.2 by mapping architecture, validating engineering and performance risks, prioritizing low-cost/high-impact remediation, and producing evidence-backed plans plus a spec-driven brief for frameworks like BMad and Spec Kit. Use for stabilization audits and narrowly scoped remediation planning; do not use for security reviews or greenfield redesign.
 
 Keep platform-neutral logic in `SKILL.md` and `references/`. Treat Claude Code commands/hooks/subagents as optional adapters so the core workflow remains portable. If packaged as a Claude Code plugin, document the minimum supported Claude Code version and validate its current plugin manifest/command conventions against the installed version rather than hardcoding assumptions in this brief.
 
@@ -507,7 +537,7 @@ Build the skill in assessment-only mode first. The first milestone should:
 2. produce the architectural health baseline;
 3. trace one critical runtime path;
 4. identify and validate a small number of high-confidence candidates;
-5. generate a ranked `REMEDIATION_MASTER_PLAN.md` without modifying application code;
+5. generate a ranked `REMEDIATION_MASTER_PLAN.md` and the `SPEC_DRIVEN_BRIEF.md` hand-off without modifying application code;
 6. validate the artifact schema and surface evidence gaps.
 
 Only after the assessment output proves useful should the plugin add opt-in remediation commands. This keeps the initial tool safe, testable, and focused on decision quality.

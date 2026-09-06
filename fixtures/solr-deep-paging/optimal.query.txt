@@ -1,0 +1,15 @@
+FALSE POSITIVE: cursor pagination that walks the same result set cheaply.
+
+This request pages deep into the results without a growing offset. Each page
+carries the previous response's nextCursorMark, so SOLR resumes from the sort
+position instead of scoring and skipping every prior document. Cost per page is
+flat regardless of depth. Do not flag it as a deep-paging defect.
+
+  GET /solr/products/select
+      ?q=category:shoes
+      &sort=price+asc,id+asc          (deterministic tiebreaker — required for cursorMark)
+      &rows=20
+      &cursorMark=AoIIP4AAACxQcm9kdWN0
+
+Context needed to clear it: cursorMark present, sort has a unique tiebreaker,
+no large start offset. This is the correct deep-pagination pattern.

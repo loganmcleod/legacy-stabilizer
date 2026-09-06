@@ -1,0 +1,25 @@
+TRUE POSITIVE: SOLR 9.x deep pagination with a large start offset.
+
+To reach page 5000 the client asks SOLR to score and skip every prior document
+(start=100000). Cost grows with the offset, so late pages get progressively slower
+and heap-heavier. Classic pattern; confirm with the slow-query log or debugQuery
+timing, not the query string alone.
+
+  GET /solr/products/select
+      ?q=category:shoes
+      &sort=price+asc
+      &start=100000
+      &rows=20
+
+Context needed to confirm: the products core is large (millions of docs) and this
+query is issued at high frequency for deep pages. Confirm with:
+  - the SOLR slow-query log, or
+  - the same request with &debugQuery=true (inspect timing), or
+  - QTime rising with start offset.
+
+Correct rewrite (cursor pagination):
+  GET /solr/products/select
+      ?q=category:shoes
+      &sort=price+asc,id+asc         (a deterministic tiebreaker is required)
+      &rows=20
+      &cursorMark=*                  (then pass the returned nextCursorMark)

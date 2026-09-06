@@ -11,9 +11,11 @@ Workflow to trace: $ARGUMENTS
 Trace it through every boundary:
 
 ```
-Angular 17 route/component or AngularJS route/template -> controller/component/directive -> client service/HTTP
+Angular / AngularJS / React route or component (host or federated MFE remote)
+-> controller/component/directive/hook -> client service / data-access hook / HTTP
 -> Spring endpoint -> service orchestration -> repository/DAO/stored proc
--> Oracle objects and SQL -> response mapping -> UI state update
+   (and any SOLR query or Redis cache access)
+-> Oracle / AlloyDB objects and SQL -> response mapping -> UI state update
 ```
 
 At each boundary record: input/output shape, validation/transformation, state

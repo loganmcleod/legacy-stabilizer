@@ -1,9 +1,11 @@
 # Detectors — Oracle / Persistence
 
-Candidate detectors for the data layer. Targeted platform: **Oracle 19c**. These
-carry the **heaviest evidence burden** in the whole workflow: most database claims
-require schema metadata and an execution plan, not source inspection. Source
-inspection produces a lead only.
+Candidate detectors for the data layer. Targeted platform: **Oracle 19c**. For an
+**AlloyDB (PostgreSQL)** data layer see `detectors-alloydb.md` — the anti-patterns
+rhyme but the plan format, hints, and datatype rules differ; do not carry an Oracle
+assumption into PostgreSQL. These detectors carry the **heaviest evidence burden**
+in the whole workflow: most database claims require schema metadata and an
+execution plan, not source inspection. Source inspection produces a lead only.
 
 ## Oracle 19c context
 

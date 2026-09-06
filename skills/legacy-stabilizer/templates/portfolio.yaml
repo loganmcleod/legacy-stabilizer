@@ -11,10 +11,12 @@ repositories:
     path: /abs/path/or/canonical/url
     sha: unknown                      # pinned commit SHA
     default_branch: unknown
-    build_system: unknown             # java/maven, javascript/nx, javascript/angular, javascript/npm, ...
-    tech_stack: []                    # e.g. angularjs-1.x, angular-17, nx-17.3, spring-boot-2.7, hibernate-5.6, java-21, oracle-19c
-    deployables: []                   # services, web apps, jobs, migration projects
-    database_schemas: []              # Oracle schemas this repo touches
+    build_system: unknown             # java/maven, javascript/nx, javascript/angular, javascript/npm, javascript/webpack, javascript/module-federation, ...
+    tech_stack: []                    # e.g. angularjs-1.x, angular-17, nx-17.3, react-19, module-federation, spring-boot-2.7, spring-boot-3.5, hibernate, java-21, maven-3.8, oracle-19c, alloydb, solr-9, redis-7.2
+    deployables: []                   # services, web apps, MFE host/remotes, jobs, migration projects
+    database_schemas: []              # Oracle / AlloyDB schemas this repo touches
+    search_collections: []            # SOLR cores/collections this repo queries or indexes
+    cache_namespaces: []              # Redis key prefixes / logical caches this repo uses
     upstream_dependencies: []         # repos/services it calls
     downstream_dependencies: []       # repos/services that call it
     production_criticality: unknown   # high | medium | low

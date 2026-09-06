@@ -9,8 +9,10 @@ elements explicitly**.
 
 1. **System context** — users, external systems, and the polyrepo application
    boundary.
-2. **Container / deployable view** — AngularJS 1.x and Angular 17 (NX) apps,
-   Spring Boot services/jobs, integration components, Oracle schemas.
+2. **Container / deployable view** — AngularJS 1.x, Angular 17 (NX), and React 19
+   apps (including federated MFE host/remotes), Spring Boot services/jobs,
+   integration components, Oracle 19c and AlloyDB schemas, SOLR 9.x cores, and
+   Redis 7.2 caches.
 3. **Component hot-spot view** — only for high-risk / high-change areas.
 4. **Critical runtime sequences** — the most important user and batch workflows.
 5. **Data ownership map** — authoritative sources, shared tables/schemas,
@@ -24,8 +26,13 @@ Container view:
 
 ```mermaid
 flowchart LR
+  SHELL[React 19 host - Module Federation] --> REMOTE[React MFE remote: orders-ui]
   UI[Angular 17 SPA / AngularJS SPA] -->|HTTPS/JSON| API[Spring Boot: orders-api]
+  REMOTE -->|HTTPS/JSON| API
   API -->|JDBC| ORA[(Oracle: ORDERS schema)]
+  API -->|JDBC| ALLOY[(AlloyDB: catalog)]
+  API -->|HTTP| SOLR[SOLR 9.x: product core]
+  API -->|RESP| REDIS[(Redis 7.2 cache)]
   API -->|HTTP| PAY[payments-service]
   JOB[Spring batch: nightly-recon] --> ORA
 ```

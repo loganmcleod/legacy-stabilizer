@@ -2,7 +2,7 @@
   "name": "legacy-stabilizer",
   "displayName": "Legacy Stabilizer",
   "version": "0.3.0",
-  "description": "Assess and stabilize legacy AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c polyrepos: map architecture, validate engineering and performance risks with evidence, and produce a ranked remediation plan. Assessment-first; remediation is opt-in and authorization-gated. Not a security tool.",
+  "description": "Assess and stabilize polyrepos spanning AngularJS 1.x, Angular 17 (NX 17.3.x), and React 19 (Webpack 5 Module Federation MFEs), Java 21 / Spring Boot 2.7.18 & 3.5 / Hibernate / Maven 3.8+, Oracle 19c and AlloyDB (PostgreSQL), SOLR 9.x, and Redis 7.2: map architecture, validate engineering and performance risks with evidence, produce a ranked remediation plan, and emit a SPEC_DRIVEN_BRIEF for spec-driven AI frameworks (BMad, Spec Kit). Assessment-first; remediation is opt-in and authorization-gated. Not a security tool.",
   "author": {
     "name": "Logan McLeod"
   },
@@ -15,13 +15,23 @@
     "angularjs",
     "angular",
     "nx",
+    "react",
+    "module-federation",
+    "micro-frontend",
     "spring-boot",
     "hibernate",
     "java",
+    "maven",
     "oracle",
+    "alloydb",
+    "postgresql",
+    "solr",
+    "redis",
     "polyrepo",
     "architecture",
     "performance",
-    "remediation"
+    "remediation",
+    "spec-driven",
+    "bmad"
   ]
 }

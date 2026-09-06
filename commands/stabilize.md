@@ -1,5 +1,5 @@
 ---
-description: Overview and router for the legacy stabilization workflow (AngularJS/Angular/NX, Spring Boot, Oracle)
+description: Overview and router for the stabilization workflow (AngularJS/Angular/NX/React MFE, Spring Boot, Oracle/AlloyDB, SOLR, Redis)
 argument-hint: "[optional: what you want to assess or stabilize]"
 ---
 
@@ -22,7 +22,8 @@ the phases, or jump to the requested one. The commands are:
 - `/legacy-stabilizer:stabilize-baseline` — Phases 0 & 2, charter + operational baseline.
 - `/legacy-stabilizer:stabilize-trace` — Phase 3, trace a critical runtime path.
 - `/legacy-stabilizer:stabilize-findings` — Phases 4–5, detect and normalize findings.
-- `/legacy-stabilizer:stabilize-plan` — Phase 6, produce the ranked master plan.
+- `/legacy-stabilizer:stabilize-plan` — Phase 6, produce the ranked master plan
+  and the `SPEC_DRIVEN_BRIEF.md` (input for spec-driven AI frameworks like BMad).
 - `/legacy-stabilizer:stabilize-remediate` — Phases 7–10, authorization-gated.
 
 Do not perform security work. Do not modify code in assessment mode.

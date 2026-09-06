@@ -1,22 +1,37 @@
 # Detectors — Spring Boot / Java
 
 Candidate detectors for the service/application layer. Targeted stack: **Java 21,
-Spring Boot 2.7.18, Hibernate 5.6.x**. Matches are leads. Attach runtime or test
-evidence before raising confidence.
+Spring Boot 2.7.18 and/or 3.5, Hibernate (5.6.x on Boot 2.7 / 6.x on Boot 3.x),
+built with Maven 3.8+**. An estate may run both major Boot lines side by side.
+Matches are leads. Attach runtime or test evidence before raising confidence.
 
 ## Version context (record, do not auto-remediate)
 
+- **Establish the Boot line first.** Spring Boot 2.7 uses the `javax.*` namespace
+  and Hibernate 5.6; Spring Boot 3.x uses `jakarta.*` and Hibernate 6.x. The
+  namespace tells you which line a module is on — do not carry a 2.7 assumption
+  into a 3.5 module or vice versa.
 - **Spring Boot 2.7.18** is the last 2.7 patch and is past OSS end-of-life. Note
   the support status as a risk; do **not** make a framework upgrade the default
   remediation — it is an L6–L7 move requiring a decision record.
-- **Java 21** virtual threads are **not** wired in by Spring Boot 2.7 (that
-  arrived in Boot 3.2). Blocking I/O still runs on platform threads here, so
-  pool-exhaustion detectors below still apply. If virtual threads were retrofitted
-  by hand, watch for pinning inside `synchronized` blocks or held monitors.
-- **Hibernate 5.6.x**: default `open-session-in-view` masks
+- **Spring Boot 3.5**: on `jakarta.*`, Hibernate 6.x, and Spring Framework 6.x.
+  Virtual threads are available (`spring.threads.virtual.enabled`) — if enabled,
+  watch for pinning inside `synchronized` blocks or held monitors, and note that
+  the classic fixed-pool-exhaustion detector applies differently. Micrometer
+  observability is built in; check whether it is actually wired before assuming
+  telemetry exists. A mixed 2.7/3.5 estate has cross-line contract and dependency
+  skew — trace shared libraries across both.
+- **Java 21** virtual threads are **not** auto-wired by Spring Boot 2.7 (they
+  arrived for MVC/`@Async` in Boot 3.2+). On 2.7, blocking I/O still runs on
+  platform threads, so the pool-exhaustion detectors below apply. If virtual
+  threads were retrofitted by hand, watch for monitor pinning.
+- **Hibernate (5.6 / 6.x)**: default `open-session-in-view` masks
   `LazyInitializationException` and hides N+1 behind the view. Check the
   `spring.jpa.open-in-view` setting and the batch fetch size before drawing
   conclusions.
+- **Maven 3.8+**: `http://` repositories are blocked by default; a build failing on
+  a mirror or a dependency-version drift across modules is a build-reliability lead,
+  not a runtime defect — keep it separate from stabilization fixes.
 
 ## What to look for
 

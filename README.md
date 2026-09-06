@@ -1,14 +1,21 @@
 # legacy-stabilizer
 
-A Claude Code skill and plugin for **assessing and stabilizing complex legacy
-polyrepos** built on AngularJS 1.x and Angular 17 (NX 17.3.x), Java 21 / Spring
-Boot 2.7.18 / Hibernate 5.6.x, and Oracle 19c.
+A Claude Code skill and plugin for **assessing and stabilizing complex legacy and
+modern polyrepos**. The estate may include any of:
+
+- **Front end:** AngularJS 1.x, Angular 17 (NX 17.3.x), and React 19.
+- **MFE composition:** micro-frontends via Webpack 5 Module Federation.
+- **Back end:** Java 21; Spring Boot 2.7.18 and/or 3.5; Hibernate; Maven 3.8+.
+- **Relational data:** Oracle 19c and AlloyDB (PostgreSQL-compatible, GCP).
+- **Search:** SOLR 9.x. · **Cache:** Redis 7.2 (often GCP Memorystore).
 
 Its first objective is to reduce production risk — defects, regressions, and
 performance bottlenecks — at the **lowest safe cost**. Modernization is a
 supporting tactic, never the default. It maps architecture across repositories,
 validates each risk with evidence, ranks work by benefit-over-cost, and produces a
-`REMEDIATION_MASTER_PLAN.md`.
+`REMEDIATION_MASTER_PLAN.md` plus a `SPEC_DRIVEN_BRIEF.md` — a ready-to-hand-off
+input for spec-driven AI frameworks such as [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD)
+and [GitHub Spec Kit](https://github.com/github/spec-kit).
 
 > This is an engineering-quality and performance workflow. **It does not perform a
 > security audit** and will not present security findings unless you separately ask.
@@ -38,6 +45,10 @@ can act on. This package encodes a stricter discipline:
   *demonstrated* risk.
 - **A concise portfolio plan, not a scanner dump.** The master plan is a ranked
   decision index; detailed evidence lives in repo-local artifacts.
+- **A spec-driven hand-off.** Every assessment run also emits `SPEC_DRIVEN_BRIEF.md`
+  — a self-contained brief (product context, tech stack, hard guardrails, and the
+  ranked backlog as epics/stories) built to be pasted straight into a spec-driven
+  AI tool like BMad or Spec Kit to generate PRDs and stories for the fix work.
 
 The full design rationale is in [`docs/DESIGN_BRIEF.md`](docs/DESIGN_BRIEF.md).
 
@@ -121,7 +132,7 @@ The helper scripts need **Python 3.8+** on your PATH. All commands are namespace
 | 3 | `/legacy-stabilizer:stabilize-inventory <path>` | 1 | Maps repos, builds, and candidate layers | read-only |
 | 4 | `/legacy-stabilizer:stabilize-trace <workflow>` | 3 | Traces one critical path end to end | read-only |
 | 5 | `/legacy-stabilizer:stabilize-findings [area]` | 4, 5 | Runs detectors, normalizes + dedupes findings | read-only |
-| 6 | `/legacy-stabilizer:stabilize-plan` | 6 | Triages into a ranked master plan | read-only |
+| 6 | `/legacy-stabilizer:stabilize-plan` | 6 | Triages into a ranked master plan **and the spec-driven brief** | read-only |
 | 7 | `/legacy-stabilizer:stabilize-remediate <finding-id>` | 7–10 | Designs, implements, releases, prevents | **authorization-gated** |
 
 ### How you interact with it
@@ -230,8 +241,18 @@ or execution plan.
 ```
 
 **Produces** the ranked `REMEDIATION_MASTER_PLAN.md` and gates it with
-`validate_plan.py`. **This is the end of an assessment-only run** — the deliverable
-is the plan, and no application code has changed.
+`validate_plan.py`, then **always also produces `SPEC_DRIVEN_BRIEF.md`** — the
+same portfolio rewritten as a self-contained brief (stack, guardrails, and the
+ranked work as epics/stories) that you paste straight into a spec-driven AI
+framework like BMad or Spec Kit. **This is the end of an assessment-only run** —
+the deliverables are the plan and the brief, and no application code has changed.
+
+> **What is the spec-driven brief for?** The master plan is for *humans* deciding
+> what to do. `SPEC_DRIVEN_BRIEF.md` is *machine/agent-facing* input: hand it to a
+> spec-driven development tool and it generates the PRDs, epics, and stories that
+> implement the plan — without re-discovering the estate. It carries the guardrails
+> (stabilize-first, preserve contracts, evidence-before-action) forward so the
+> generated specs cannot quietly turn a stabilization job into a rewrite.
 
 ### Stage 7 — `stabilize-remediate` (only when authorized)
 
@@ -258,8 +279,8 @@ tests → before/after evidence → contract check → risk-proportional release
 ```
 
 This yields the dossier, health baseline, a traced runtime path, a validated
-findings registry, and a ranked `REMEDIATION_MASTER_PLAN.md` — **without modifying
-any application code**.
+findings registry, a ranked `REMEDIATION_MASTER_PLAN.md`, and the
+`SPEC_DRIVEN_BRIEF.md` hand-off — **without modifying any application code**.
 
 ---
 
@@ -276,8 +297,11 @@ legacy-stabilizer/
 │   │   ├── workflow.md             # Phases 0–10 in full
 │   │   ├── detectors-angularjs.md
 │   │   ├── detectors-angular-nx.md
-│   │   ├── detectors-spring.md
+│   │   ├── detectors-react-mfe.md  # React 19 + Webpack 5 Module Federation
+│   │   ├── detectors-spring.md     # Spring Boot 2.7 & 3.5, Java 21, Maven
 │   │   ├── detectors-oracle.md
+│   │   ├── detectors-alloydb.md    # AlloyDB / PostgreSQL
+│   │   ├── detectors-search-cache.md  # SOLR 9.x + Redis 7.2
 │   │   ├── triage-model.md         # scoring formula + L0–L7 intervention ladder
 │   │   ├── artifact-schemas.md     # workspace layout + finding record schema
 │   │   └── documentation.md        # C4 views + Mermaid runtime diagrams
@@ -287,7 +311,7 @@ legacy-stabilizer/
 │   │   ├── validate_plan.py        # gate: evidence/verify/rollback/owner present
 │   │   ├── stab_schema.py          # shared schema + validation
 │   │   └── test_scripts.py         # self-checks
-│   └── templates/                  # CHARTER, portfolio, master plan, baseline, finding, decision record
+│   └── templates/                  # CHARTER, portfolio, master plan, baseline, spec-driven brief, finding, decision record
 ├── skills/stabilization-init/       # ← start-here setup skill (gather inputs, build dossier)
 │   ├── SKILL.md
 │   └── templates/BACKGROUND_DOSSIER.md
@@ -314,7 +338,7 @@ python inventory_workspace.py ~/work/my-estate --out inventory.json
 python normalize_findings.py evidence/findings.json                    # validate + flag dupes
 python normalize_findings.py evidence/findings.json --out merged.json --merge  # collapse dupes
 python validate_plan.py evidence/findings.json --plan REMEDIATION_MASTER_PLAN.md
-python test_scripts.py        # 12 self-checks, stdlib only
+python test_scripts.py        # 13 self-checks, stdlib only
 ```
 
 `validate_plan.py` exits non-zero if any committed finding is missing evidence,
